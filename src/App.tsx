@@ -341,8 +341,9 @@ const TAX_CONFIG: Record<number, TaxRules> = {
   }
 };
 
-// --- Helper: Strict Floor Rounding (Rounding Down) ---
-const round = (num: number) => Math.floor(num * 100) / 100;
+// --- Helper: ACCOUNTING ROUNDING (Arithmetic Rounding with Epsilon) ---
+// This handles floating point errors correctly (e.g. 1.005 -> 1.01)
+const round = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
 
 // --- Helper: Safe Animated Counter ---
 const AnimatedCounter = ({ value, className }: { value: number | undefined, className?: string }) => {
