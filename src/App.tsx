@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { 
-  Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, Wallet, 
+  Plus, Minus, TrendingDown, Info, Wallet, 
   Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair 
 } from 'lucide-react';
 import { motion, useTransform, animate, useMotionValue } from 'framer-motion';
@@ -85,7 +85,6 @@ const TRANSLATIONS = {
     },
     tooltip: {
       title1: "1. Politiski represēta persona (Cietušais)",
-      desc1: "Šis statuss tiek piešķirts cilvēkiem, kuri cieta no komunistiskā vai nacistiskā režīma represijām.",
       list1: [{ b: "Izsūtītie:", t: "Cilvēki, kuri tika deportēti." }],
       title2: "2. NPK persona (Cīnītājs)",
       list2: [{ b: "Bruņotā pretošanās:", t: "Nacionālie partizāni." }]
@@ -149,7 +148,6 @@ const TRANSLATIONS = {
     },
     tooltip: {
       title1: "1. Политически репрессированное лицо или участник НДС",
-      desc1: "Статус присваивается людям, пострадавшим от репрессий.",
       list1: [{ b: "Высланные:", t: "Люди, депортированные в спецлагеря." }],
       title2: "2. Участник национального движения сопротивления (Борец)",
       list2: [{ b: "Сопротивление:", t: "Национальные партизаны." }]
@@ -213,7 +211,6 @@ const TRANSLATIONS = {
     },
     tooltip: {
       title1: "1. Politically Repressed Person",
-      desc1: "Status granted to people who suffered from repressions.",
       list1: [{ b: "Deported:", t: "People deported to camps." }],
       title2: "2. NRM Person",
       list2: [{ b: "Resistance:", t: "Freedom fighters." }]
@@ -288,7 +285,7 @@ const AnimatedCounter = ({ value, className }: { value: number | undefined, clas
 
 const SalaryCalculator = () => {
   const [lang, setLang] = useState<'lv' | 'ru' | 'en'>('lv');
-  const [year, setYear] = useState<number>(2026);
+  const year = 2026;
   const [mode, setMode] = useState('gross');
   const [period, setPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [amount, setAmount] = useState<number | string>(1500);
@@ -331,7 +328,7 @@ const SalaryCalculator = () => {
 
     const totalReliefs = reliefDependents + reliefDisability + reliefRepressed;
     const taxBase = Math.max(0, round(safeGross - vsaoiEmp - appliedNonTaxable - totalReliefs));
-    let iin = (taxBase > rules.iinThreshold) 
+    const iin = (taxBase > rules.iinThreshold) 
       ? round(rules.iinThreshold * rules.iinRateLow) + round((taxBase - rules.iinThreshold) * rules.iinRateHigh)
       : round(taxBase * rules.iinRateLow);
 
@@ -361,7 +358,7 @@ const SalaryCalculator = () => {
       calcGross = mid;
     }
     return calculateTaxFromGross(calcGross, dependents, taxBookSubmitted);
-  }, [amount, dependents, taxBookSubmitted, mode, year, period, pensionType, disabilityGroup, isRepressed, rules]);
+  }, [amount, dependents, taxBookSubmitted, mode, period, pensionType, disabilityGroup, isRepressed, rules]);
 
   const displayVal = (val: number) => period === 'yearly' ? val * 12 : val;
   const generateSummary = () => {
@@ -497,6 +494,21 @@ const SalaryCalculator = () => {
                         <div className={`w-4 h-4 bg-white rounded-full transition-transform ${isRepressed ? 'translate-x-3' : ''}`} />
                       </div>
                    </div>
+                </div>
+             </div>
+          </div>
+          <div className="mt-auto border-t pt-4">
+             <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold text-slate-400 flex items-center gap-2 uppercase">{year}. {t.tax_env}</span>
+             </div>
+             <div className="flex gap-4 p-5 rounded-3xl bg-slate-50 border text-xs text-slate-600">
+                <Info size={20} className="text-indigo-400 shrink-0"/>
+                <div>
+                   <p className="font-bold text-slate-800 mb-1">{year}. {t.tax_env}:</p>
+                   <ul className="space-y-1">
+                      <li className="flex items-center gap-2">{t.min_wage_info}: <b>€{rules.minWage}</b></li>
+                      <li className="flex items-center gap-2">{t.non_taxable}: <b>€{rules.nonTaxableMin}</b></li>
+                   </ul>
                 </div>
              </div>
           </div>
