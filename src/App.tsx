@@ -3,7 +3,7 @@ import {
   Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, Wallet, 
   Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair 
 } from 'lucide-react';
-import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
+import { motion, useTransform, animate, useMotionValue } from 'framer-motion';
 
 // --- FLAG ICONS ---
 
@@ -41,10 +41,8 @@ const TRANSLATIONS = {
     subtitle: "Latvijas algas aprēķins",
     gross: "Bruto",
     net: "Neto",
-    gross_full: "Bruto (Uz papīra)",
-    net_full: "Neto (Uz rokas)",
     gross_to_net: "Bruto → Neto (uz rokas)",
-    net_to_gross: "Neto → Bruto (uz papīра)",
+    net_to_gross: "Neto → Bruto (uz papīra)",
     monthly: "Mēnesī",
     yearly: "Gadā",
     salary_monthly: "Alga mēnesī",
@@ -61,8 +59,6 @@ const TRANSLATIONS = {
     service: "Izdienas",
     old_age: "Vecuma",
     group_1: "1. gr",
-    group_2: "2. gr",
-    group_3: "3. gr",
     results_title: "Rezultāts",
     gross_salary: "Bruto alga (uz papīra)",
     social_tax: "Sociālais nodoklis",
@@ -89,28 +85,18 @@ const TRANSLATIONS = {
     },
     tooltip: {
       title1: "1. Politiski represēta persona (Cietušais)",
-      desc1: "Šis statuss tiek piešķirts cilvēkiem, kuri cieta no komunistiskā vai nacistiskā režīma represijām. Tā ir vislielākā grupa, kurā ietilpst:",
-      list1: [
-        { b: "Izsūtītie:", t: "Cilvēki, kuri tika deportēti (piem., 1941. vai 1949. gadā) vai nometināti speciālās nometinājuma vietās." },
-        { b: "Ieslodzītie:", t: "Personas, kas turētas cietumos, nometnēs vai geto politisku motīvu dёl." },
-        { b: "Dzimušie izsūtījumā:", t: "Bērni, kuri piedzima vecākiem nometinājumā represiju laikā." }
-      ],
+      desc1: "Šis statuss tiek piešķirts cilvēkiem, kuri cieta no komunistiskā vai nacistiskā režīma represijām.",
+      list1: [{ b: "Izsūtītie:", t: "Cilvēki, kuri tika deportēti." }],
       title2: "2. NPK persona (Cīnītājs)",
-      desc2: "Šis statuss ir piešķirts cilvēkiem, kuri aktīvi pretojās okupācijas režīmiem. Ietilpst:",
-      list2: [
-        { b: "Bruņotā pretošanās:", t: "Nacionālie partizāni (\"mežabrāļi\") un citi brīvības cīnītāji." },
-        { b: "Neapbruņotā pretošanās:", t: "Pagrīdes dalībnieki, brїvvalsts ideju izplatītāji." }
-      ]
+      list2: [{ b: "Bruņotā pretošanās:", t: "Nacionālie partizāni." }]
     },
     tax_env: "nodokļu vide",
-    min_wage_info: "Minimālā alga",
-    non_taxable: "Neapliekamais minimums",
-    fixed: "Fiksēts",
+    min_wage_info: "Min. alga",
+    non_taxable: "Neapliekamais min.",
     relief_min: "Neapliekamais minimums",
     relief_dep: "Par apgādājamiem",
     relief_dis: "Par invaliditāti",
-    relief_rep: "Par represētā statusu",
-    no_reliefs: "Nav piemērotu atvieglojumu"
+    relief_rep: "Par represētā statusu"
   },
   ru: {
     flag: FlagRU,
@@ -119,8 +105,6 @@ const TRANSLATIONS = {
     subtitle: "Расчёт зарплаты в Латвии",
     gross: "Брутто",
     net: "Нетто",
-    gross_full: "Брутто (На бумаге)",
-    net_full: "Нетто (На руки)",
     gross_to_net: "Брутто → Нетто (на руки)",
     net_to_gross: "Нетто → Брутто (на бумаге)",
     monthly: "В месяц",
@@ -139,8 +123,6 @@ const TRANSLATIONS = {
     service: "Выслуга",
     old_age: "Возраст",
     group_1: "1 гр",
-    group_2: "2 гр",
-    group_3: "3 гр",
     results_title: "Результат",
     gross_salary: "Брутто зарплата (на бумаге)",
     social_tax: "Социальный налог",
@@ -166,29 +148,19 @@ const TRANSLATIONS = {
       repressed: "репрессированное лицо"
     },
     tooltip: {
-      title1: "1. Политически репрессированное лицо (Жертва)",
-      desc1: "Статус присваивается людям, пострадавшим от репрессий коммунистического или нацистского режимов. Включает:",
-      list1: [
-        { b: "Высланные:", t: "Люди, депортированные (напр. в 1941 или 1949) или поселенные в спецлагерях." },
-        { b: "Заключенные:", t: "Лица, содержавшиеся в тюрьмах, лагерях или гетто по политическим мотивам." },
-        { b: "Родившиеся в ссылке:", t: "Дети, родившиеся у родителей во время нахождения в ссылке." }
-      ],
+      title1: "1. Политически репрессированное лицо или участник НДС",
+      desc1: "Статус присваивается людям, пострадавшим от репрессий.",
+      list1: [{ b: "Высланные:", t: "Люди, депортированные в спецлагеря." }],
       title2: "2. Участник национального движения сопротивления (Борец)",
-      desc2: "Статус присваивается людям, активно сопротивлявшимся оккупационным режимам. Включает:",
-      list2: [
-        { b: "Вооруженное сопротивление:", t: "Национальные партизаны («лесные братья») и др." },
-        { b: "Невооруженное сопротивление:", t: "Подпольщики, распространители идей независимости." }
-      ]
+      list2: [{ b: "Сопротивление:", t: "Национальные партизаны." }]
     },
     tax_env: "налоговая среда",
     min_wage_info: "Мин. зарплата",
-    non_taxable: "Необлагаемый минимум",
-    fixed: "Фикс.",
+    non_taxable: "Необлагаемый мин.",
     relief_min: "Необлагаемый минимум",
     relief_dep: "За иждивенцев",
     relief_dis: "За инвалидность",
-    relief_rep: "За статус репрессированного",
-    no_reliefs: "Льготы не применены"
+    relief_rep: "За статус репрессированного"
   },
   en: {
     flag: FlagEN,
@@ -197,8 +169,6 @@ const TRANSLATIONS = {
     subtitle: "Latvian salary calculation",
     gross: "Gross",
     net: "Net",
-    gross_full: "Gross (On paper)",
-    net_full: "Net (In hand)",
     gross_to_net: "Gross → Net (In hand)",
     net_to_gross: "Net → Gross (On paper)",
     monthly: "Monthly",
@@ -217,8 +187,6 @@ const TRANSLATIONS = {
     service: "Service",
     old_age: "Old Age",
     group_1: "Grp 1",
-    group_2: "Grp 2",
-    group_3: "Grp 3",
     results_title: "Results",
     gross_salary: "Gross Salary (On paper)",
     social_tax: "Social Security Tax",
@@ -234,8 +202,8 @@ const TRANSLATIONS = {
       period_month: "monthly",
       period_year: "yearly",
       salary: "salary",
-      book_yes: "Tax book is submitted to employer.",
-      book_no: "Tax book is not submitted to employer.",
+      book_yes: "Tax book is submitted.",
+      book_no: "Tax book is not submitted.",
       dep_prefix: "Registered dependents:",
       status_prefix: "Applied status:",
       pension_old: "old-age pensioner",
@@ -244,33 +212,22 @@ const TRANSLATIONS = {
       repressed: "repressed person"
     },
     tooltip: {
-      title1: "1. Politically Repressed Person (Victim)",
-      desc1: "Status granted to people who suffered from communist or Nazi regime repressions. Includes:",
-      list1: [
-        { b: "Deported:", t: "People deported (e.g., in 1941 or 1949) or settled in special camps." },
-        { b: "Imprisoned:", t: "Persons held in prisons, camps, or ghettos for political or national reasons." },
-        { b: "Born in exile:", t: "Children born to parents while in settlement during repressions." }
-      ],
-      title2: "2. NRM Person (National Resistance Movement)",
-      desc2: "Status granted to people who actively resisted occupation regimes. Includes:",
-      list2: [
-        { b: "Armed resistance:", t: "National partisans ('Forest Brothers') and others fighting with arms." },
-        { b: "Unarmed resistance:", t: "Underground members, distributors of independence ideas." }
-      ]
+      title1: "1. Politically Repressed Person",
+      desc1: "Status granted to people who suffered from repressions.",
+      list1: [{ b: "Deported:", t: "People deported to camps." }],
+      title2: "2. NRM Person",
+      list2: [{ b: "Resistance:", t: "Freedom fighters." }]
     },
     tax_env: "tax environment",
     min_wage_info: "Min wage",
-    non_taxable: "Non-taxable min",
-    fixed: "Fixed",
+    non_taxable: "Non-taxable min.",
     relief_min: "Non-taxable minimum",
     relief_dep: "For dependents",
     relief_dis: "For disability",
-    relief_rep: "For repressed status",
-    no_reliefs: "No reliefs applied"
+    relief_rep: "For repressed status"
   }
 };
 
-// --- Types & Configuration ---
 type TaxRules = {
   minWage: number;
   nonTaxableMin: number;
@@ -293,42 +250,20 @@ type TaxRules = {
 
 const TAX_CONFIG: Record<number, TaxRules> = {
   2025: {
-    minWage: 740,
-    nonTaxableMin: 510,
-    vsaoiEmployee: 0.105,
-    vsaoiEmployer: 0.2359,
-    vsaoiPensionerEmployee: 0.0925, 
-    vsaoiPensionerEmployer: 0.2077, 
-    vsaoiServiceEmployee: 0.0976, 
-    vsaoiServiceEmployer: 0.2194, 
-    iinRateLow: 0.255,
-    iinRateHigh: 0.33,
-    iinThreshold: 8775,
-    dependentRelief: 250,
-    riskDuty: 0.36,
-    disabilityRelief12: 154,
-    disabilityRelief3: 120,
-    repressedRelief: 154,
-    specialNonTaxable: 500
+    minWage: 740, nonTaxableMin: 510, vsaoiEmployee: 0.105, vsaoiEmployer: 0.2359,
+    vsaoiPensionerEmployee: 0.0925, vsaoiPensionerEmployer: 0.2077,
+    vsaoiServiceEmployee: 0.0976, vsaoiServiceEmployer: 0.2194,
+    iinRateLow: 0.255, iinRateHigh: 0.33, iinThreshold: 8775, dependentRelief: 250,
+    riskDuty: 0.36, disabilityRelief12: 154, disabilityRelief3: 120,
+    repressedRelief: 154, specialNonTaxable: 500
   },
   2026: {
-    minWage: 780,
-    nonTaxableMin: 550,
-    vsaoiEmployee: 0.105,
-    vsaoiEmployer: 0.2359,
-    vsaoiPensionerEmployee: 0.0925, 
-    vsaoiPensionerEmployer: 0.2077, 
-    vsaoiServiceEmployee: 0.0976, 
-    vsaoiServiceEmployer: 0.2194,
-    iinRateLow: 0.255,
-    iinRateHigh: 0.33,
-    iinThreshold: 8775,
-    dependentRelief: 250,
-    riskDuty: 0.36,
-    disabilityRelief12: 154,
-    disabilityRelief3: 120,
-    repressedRelief: 154,
-    specialNonTaxable: 500
+    minWage: 780, nonTaxableMin: 550, vsaoiEmployee: 0.105, vsaoiEmployer: 0.2359,
+    vsaoiPensionerEmployee: 0.0925, vsaoiPensionerEmployer: 0.2077,
+    vsaoiServiceEmployee: 0.0976, vsaoiServiceEmployer: 0.2194,
+    iinRateLow: 0.255, iinRateHigh: 0.33, iinThreshold: 8775, dependentRelief: 250,
+    riskDuty: 0.36, disabilityRelief12: 154, disabilityRelief3: 120,
+    repressedRelief: 154, specialNonTaxable: 500
   }
 };
 
@@ -339,16 +274,14 @@ const AnimatedCounter = ({ value, className }: { value: number | undefined, clas
   const rounded = useTransform(count, (latest) => {
     try {
       return new Intl.NumberFormat('lv-LV', { style: 'currency', currency: 'EUR' }).format(latest);
-    } catch (e) {
-      return "€0.00";
-    }
+    } catch (e) { return "€0.00"; }
   });
 
   useEffect(() => {
     const target = (typeof value === 'number' && Number.isFinite(value)) ? value : 0;
     const controls = animate(count, target, { duration: 0.75, ease: "easeOut" });
     return controls.stop;
-  }, [value]);
+  }, [value, count]);
 
   return <motion.span className={className}>{rounded}</motion.span>;
 };
@@ -366,7 +299,7 @@ const SalaryCalculator = () => {
   const [isRepressed, setIsRepressed] = useState(false);
   const [showRepressedTooltip, setShowRepressedTooltip] = useState(false);
 
-  const rules = useMemo(() => TAX_CONFIG[year] || TAX_CONFIG[2026], [year]);
+  const rules = TAX_CONFIG[year] || TAX_CONFIG[2026];
   const t = TRANSLATIONS[lang];
 
   const calculateTaxFromGross = (grossVal: number, depCount: number, hasBook: boolean) => {
@@ -389,70 +322,46 @@ const SalaryCalculator = () => {
     let reliefRepressed = 0;
     
     if (hasBook) {
-      if (pensionType !== 'none' || disabilityGroup !== 'none') {
-         appliedNonTaxable = rules.specialNonTaxable;
-      } else {
-         appliedNonTaxable = rules.nonTaxableMin;
-      }
+      appliedNonTaxable = (pensionType !== 'none' || disabilityGroup !== 'none') ? rules.specialNonTaxable : rules.nonTaxableMin;
       reliefDependents = round(depCount * rules.dependentRelief);
       if (disabilityGroup === '1' || disabilityGroup === '2') reliefDisability = rules.disabilityRelief12;
-      if (disabilityGroup === '3') reliefDisability = rules.disabilityRelief3;
+      else if (disabilityGroup === '3') reliefDisability = rules.disabilityRelief3;
       if (isRepressed) reliefRepressed = rules.repressedRelief;
     }
 
     const totalReliefs = reliefDependents + reliefDisability + reliefRepressed;
     const taxBase = Math.max(0, round(safeGross - vsaoiEmp - appliedNonTaxable - totalReliefs));
-    let iin = 0;
-    if (taxBase > rules.iinThreshold) {
-      const highPart = round(taxBase - rules.iinThreshold);
-      const lowPart = rules.iinThreshold; 
-      iin = round(lowPart * rules.iinRateLow) + round(highPart * rules.iinRateHigh);
-    } else {
-      iin = round(taxBase * rules.iinRateLow);
-    }
+    let iin = (taxBase > rules.iinThreshold) 
+      ? round(rules.iinThreshold * rules.iinRateLow) + round((taxBase - rules.iinThreshold) * rules.iinRateHigh)
+      : round(taxBase * rules.iinRateLow);
 
     const net = round(safeGross - vsaoiEmp - iin);
     const vsaoiEmployer = round(safeGross * rateEmployer);
     const riskDuty = safeGross > 0 ? rules.riskDuty : 0; 
     
     return {
-      gross: safeGross,
-      net,
-      vsaoiEmployee: vsaoiEmp,
-      iin,
-      employerVsaoi: vsaoiEmployer,
-      riskDuty,
-      totalEmployerCost: round(safeGross + vsaoiEmployer + riskDuty),
-      nonTaxableMinApplied: appliedNonTaxable,
-      reliefDependents,
-      reliefDisability,
-      reliefRepressed,
-      totalReliefsApplied: totalReliefs,
-      taxBase,
-      rateEmp,
-      rateEmployer
+      gross: safeGross, net, vsaoiEmployee: vsaoiEmp, iin, employerVsaoi: vsaoiEmployer,
+      riskDuty, totalEmployerCost: round(safeGross + vsaoiEmployer + riskDuty),
+      nonTaxableMinApplied: appliedNonTaxable, reliefDependents, reliefDisability,
+      reliefRepressed, totalReliefsApplied: totalReliefs, taxBase, rateEmp, rateEmployer
     };
   };
 
   const results = useMemo(() => {
-    let inputVal = typeof amount === 'string' && amount === '' ? 0 : Number(amount);
-    if (period === 'yearly') inputVal = inputVal / 12;
+    let inputVal = (typeof amount === 'string' && amount === '') ? 0 : Number(amount);
+    if (period === 'yearly') inputVal /= 12;
 
-    if (mode === 'gross') {
-      return calculateTaxFromGross(inputVal, dependents, taxBookSubmitted);
-    } else {
-      let low = inputVal;
-      let high = inputVal * 3;
-      let calcGross = inputVal;
-      for (let i = 0; i < 25; i++) {
-        const mid = (low + high) / 2;
-        if (calculateTaxFromGross(mid, dependents, taxBookSubmitted).net < inputVal) low = mid;
-        else high = mid;
-        calcGross = mid;
-      }
-      return calculateTaxFromGross(calcGross, dependents, taxBookSubmitted);
+    if (mode === 'gross') return calculateTaxFromGross(inputVal, dependents, taxBookSubmitted);
+    
+    let low = inputVal, high = inputVal * 3, calcGross = inputVal;
+    for (let i = 0; i < 25; i++) {
+      const mid = (low + high) / 2;
+      if (calculateTaxFromGross(mid, dependents, taxBookSubmitted).net < inputVal) low = mid;
+      else high = mid;
+      calcGross = mid;
     }
-  }, [amount, dependents, taxBookSubmitted, mode, year, period, pensionType, disabilityGroup, isRepressed]);
+    return calculateTaxFromGross(calcGross, dependents, taxBookSubmitted);
+  }, [amount, dependents, taxBookSubmitted, mode, year, period, pensionType, disabilityGroup, isRepressed, rules]);
 
   const displayVal = (val: number) => period === 'yearly' ? val * 12 : val;
   const generateSummary = () => {
@@ -552,7 +461,7 @@ const SalaryCalculator = () => {
                 </div>
              </div>
              <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex flex-col">
+                <div className="flex flex-col h-full">
                    <label className="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1.5"><Accessibility size={16}/>{t.disability}</label>
                    <div className="bg-slate-100/50 p-1 rounded-2xl flex flex-1 items-stretch">
                       {['none', '1', '2', '3'].map((grp) => (
@@ -563,7 +472,7 @@ const SalaryCalculator = () => {
                       ))}
                    </div>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col h-full">
                    <label className="text-xs font-bold text-slate-500 mb-2 flex items-center gap-1.5"><Landmark size={16}/>{t.status}</label>
                    <div onClick={() => setIsRepressed(!isRepressed)} className={`cursor-pointer rounded-2xl border p-3 flex-1 flex items-center justify-between transition-all ${isRepressed ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200'}`}>
                       <div className="flex items-center gap-1.5 pr-2">
@@ -574,11 +483,11 @@ const SalaryCalculator = () => {
                              <div className="absolute bottom-full left-0 w-64 p-3 bg-white shadow-2xl rounded-xl border z-50 text-[10px] text-slate-600">
                                 <p className="font-bold text-indigo-900 mb-1">{t.tooltip.title1}</p>
                                 <ul className="list-disc pl-3 space-y-1 mb-2">
-                                  {t.tooltip.list1.map((item, idx) => <li key={idx}><b>{item.b}</b> {item.t}</li>)}
+                                  {t.tooltip.list1.map((item: {b:string, t:string}, idx: number) => <li key={idx}><b>{item.b}</b> {item.t}</li>)}
                                 </ul>
                                 <p className="font-bold text-indigo-900 mb-1">{t.tooltip.title2}</p>
                                 <ul className="list-disc pl-3 space-y-1">
-                                  {t.tooltip.list2.map((item, idx) => <li key={idx}><b>{item.b}</b> {item.t}</li>)}
+                                  {t.tooltip.list2.map((item: {b:string, t:string}, idx: number) => <li key={idx}><b>{item.b}</b> {item.t}</li>)}
                                 </ul>
                              </div>
                            )}
@@ -588,28 +497,6 @@ const SalaryCalculator = () => {
                         <div className={`w-4 h-4 bg-white rounded-full transition-transform ${isRepressed ? 'translate-x-3' : ''}`} />
                       </div>
                    </div>
-                </div>
-             </div>
-          </div>
-          <div className="mt-auto border-t pt-4">
-             <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-slate-400 flex items-center gap-2 uppercase"><Calendar size={14}/>{year}. {t.tax_env}</span>
-                <div className="bg-slate-100 p-1 rounded-xl flex">
-                   {[2025, 2026].map(y => (
-                     <button key={y} onClick={() => setYear(y)} className={`px-4 py-1.5 text-xs font-bold rounded-lg relative ${year === y ? 'text-indigo-900' : 'text-slate-500'}`}>
-                        {y}{year === y && <motion.div layoutId="year" className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10" />}
-                     </button>
-                   ))}
-                </div>
-             </div>
-             <div className="flex gap-4 p-5 rounded-3xl bg-slate-50 border text-xs text-slate-600">
-                <Info size={20} className="text-indigo-400 shrink-0"/>
-                <div>
-                   <p className="font-bold text-slate-800 mb-1">{year}. {t.tax_env}:</p>
-                   <ul className="space-y-1">
-                      <li className="flex items-center gap-2"><ArrowUpRight size={14} className="text-emerald-500"/>{t.min_wage_info}: <b>€{rules.minWage}</b></li>
-                      <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-emerald-500"/>{t.non_taxable}: <b>€{rules.nonTaxableMin}</b></li>
-                   </ul>
                 </div>
              </div>
           </div>
