@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, Wallet, 
-  Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair 
+  Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair, Gavel, Globe 
 } from 'lucide-react';
 import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
 
@@ -276,8 +276,12 @@ type TaxRules = {
   nonTaxableMin: number;
   vsaoiEmployee: number;
   vsaoiEmployer: number;
+  // Pensioner Rates
   vsaoiPensionerEmployee: number;
   vsaoiPensionerEmployer: number;
+  vsaoiServiceEmployee: number;
+  vsaoiServiceEmployer: number;
+  // General Rates
   iinRateLow: number;
   iinRateHigh: number;
   iinThreshold: number;
@@ -286,16 +290,23 @@ type TaxRules = {
   disabilityRelief12: number;
   disabilityRelief3: number;
   repressedRelief: number;
+  specialNonTaxable: number;
 };
 
+// --- UPDATED TAX CONFIG FOR 2025/2026 ---
 const TAX_CONFIG: Record<number, TaxRules> = {
   2025: {
     minWage: 740,
     nonTaxableMin: 510,
     vsaoiEmployee: 0.105,
     vsaoiEmployer: 0.2359,
-    vsaoiPensionerEmployee: 0.0925,
-    vsaoiPensionerEmployer: 0.2099,
+    // Pensioner (Old Age) Rates
+    vsaoiPensionerEmployee: 0.0925, 
+    vsaoiPensionerEmployer: 0.2077, // Fixed to 20.77
+    // Service Pensioner Rates
+    vsaoiServiceEmployee: 0.0976, // Fixed to 9.76
+    vsaoiServiceEmployer: 0.2194, // Fixed to 21.94
+    
     iinRateLow: 0.255,
     iinRateHigh: 0.33,
     iinThreshold: 8775,
@@ -303,15 +314,21 @@ const TAX_CONFIG: Record<number, TaxRules> = {
     riskDuty: 0.36,
     disabilityRelief12: 154,
     disabilityRelief3: 120,
-    repressedRelief: 154
+    repressedRelief: 154,
+    specialNonTaxable: 500
   },
   2026: {
     minWage: 780,
     nonTaxableMin: 550,
     vsaoiEmployee: 0.105,
     vsaoiEmployer: 0.2359,
-    vsaoiPensionerEmployee: 0.0925,
-    vsaoiPensionerEmployer: 0.2099,
+    // Pensioner (Old Age) Rates
+    vsaoiPensionerEmployee: 0.0925, 
+    vsaoiPensionerEmployer: 0.2077, 
+    // Service Pensioner Rates
+    vsaoiServiceEmployee: 0.0976, 
+    vsaoiServiceEmployer: 0.2194,
+
     iinRateLow: 0.255,
     iinRateHigh: 0.33,
     iinThreshold: 8775,
@@ -319,9 +336,13 @@ const TAX_CONFIG: Record<number, TaxRules> = {
     riskDuty: 0.36,
     disabilityRelief12: 154,
     disabilityRelief3: 120,
-    repressedRelief: 154
+    repressedRelief: 154,
+    specialNonTaxable: 500
   }
 };
+
+// --- Helper: Safe Rounding (Banker's rounding simulation / Standard Round) ---
+const round = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
 
 // --- Helper: Safe Animated Counter ---
 const AnimatedCounter = ({ value, className }: { value: number | undefined, className?: string }) => {
@@ -369,12 +390,19 @@ const SalaryCalculator = () => {
     try {
       const safeGross = Math.max(0, grossVal || 0);
 
-      // 1. VSAOI Rates
-      const isOldAge = pensionType === 'old_age';
-      const rateEmp = isOldAge ? rules.vsaoiPensionerEmployee : rules.vsaoiEmployee;
-      const rateEmployer = isOldAge ? rules.vsaoiPensionerEmployer : rules.vsaoiEmployer;
+      // 1. VSAOI Rates (Updated logic for all types)
+      let rateEmp = rules.vsaoiEmployee;
+      let rateEmployer = rules.vsaoiEmployer;
 
-      const vsaoiEmp = safeGross * rateEmp;
+      if (pensionType === 'old_age') {
+        rateEmp = rules.vsaoiPensionerEmployee;
+        rateEmployer = rules.vsaoiPensionerEmployer;
+      } else if (pensionType === 'service') {
+        rateEmp = rules.vsaoiServiceEmployee;
+        rateEmployer = rules.vsaoiServiceEmployer;
+      }
+
+      const vsaoiEmp = round(safeGross * rateEmp);
       
       // 2. Reliefs Breakdown
       let appliedNonTaxable = 0;
@@ -383,32 +411,42 @@ const SalaryCalculator = () => {
       let reliefRepressed = 0;
       
       if (hasBook) {
-        if (!isOldAge) appliedNonTaxable = rules.nonTaxableMin;
-        reliefDependents = depCount * rules.dependentRelief;
+        // Special Non-taxable minimum rule for Pensioners AND Disabled
+        if (pensionType !== 'none' || disabilityGroup !== 'none') {
+           appliedNonTaxable = rules.specialNonTaxable; // 500 EUR
+        } else {
+           appliedNonTaxable = rules.nonTaxableMin; // Standard 510/550
+        }
+        
+        reliefDependents = round(depCount * rules.dependentRelief);
+        
         if (disabilityGroup === '1' || disabilityGroup === '2') reliefDisability = rules.disabilityRelief12;
         if (disabilityGroup === '3') reliefDisability = rules.disabilityRelief3;
+        
         if (isRepressed) reliefRepressed = rules.repressedRelief;
       }
 
       const totalReliefs = reliefDependents + reliefDisability + reliefRepressed;
 
       // 3. Tax Base
-      const taxBase = Math.max(0, safeGross - vsaoiEmp - appliedNonTaxable - totalReliefs);
+      const taxBase = Math.max(0, round(safeGross - vsaoiEmp - appliedNonTaxable - totalReliefs));
 
       // 4. IIN
       let iin = 0;
       if (taxBase > rules.iinThreshold) {
-        const highPart = taxBase - rules.iinThreshold;
-        const lowPart = rules.iinThreshold;
-        iin = (lowPart * rules.iinRateLow) + (highPart * rules.iinRateHigh);
+        const highPart = round(taxBase - rules.iinThreshold);
+        const lowPart = rules.iinThreshold; 
+        const iinLow = round(lowPart * rules.iinRateLow);
+        const iinHigh = round(highPart * rules.iinRateHigh);
+        iin = iinLow + iinHigh;
       } else {
-        iin = taxBase * rules.iinRateLow;
+        iin = round(taxBase * rules.iinRateLow);
       }
 
-      const net = safeGross - vsaoiEmp - iin;
-      const vsaoiEmployer = safeGross * rateEmployer;
+      const net = round(safeGross - vsaoiEmp - iin);
+      const vsaoiEmployer = round(safeGross * rateEmployer);
       const riskDuty = safeGross > 0 ? rules.riskDuty : 0; 
-      const totalEmployerCost = safeGross + vsaoiEmployer + riskDuty;
+      const totalEmployerCost = round(safeGross + vsaoiEmployer + riskDuty);
 
       return {
         gross: safeGross,
