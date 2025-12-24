@@ -103,162 +103,6 @@ const TRANSLATIONS = {
       ]
     },
     tax_env: "nodokļu vide",
-    min_wage_info: "Minimālā alga",
-    non_taxable: "Neapliekamais minimums",
-    fixed: "Fiksēts",
-    relief_min: "Neapliekamais minimums",
-    relief_dep: "Par apgādājamiem",
-    relief_dis: "Par invaliditāti",
-    relief_rep: "Par represētā statusu",
-    no_reliefs: "Nav piemērotu atvieglojumu"
-  },
-  en: {
-    flag: FlagEN,
-    label: "EN",
-    title: "Salary calculator",
-    subtitle: "Latvian salary calculation",
-    gross: "Gross",
-    net: "Net",
-    gross_full: "Gross (On paper)",
-    net_full: "Net (In hand)",
-    gross_to_net: "Gross → Net (In hand)",
-    net_to_gross: "Net → Gross (On paper)",
-    monthly: "Monthly",
-    yearly: "Yearly",
-    salary_monthly: "Monthly Salary",
-    salary_yearly: "Yearly Salary",
-    dependents: "Dependents",
-    tax_book: "Tax Book",
-    submitted: "Submitted to employer",
-    not_submitted: "Not submitted to employer",
-    pension: "Pension",
-    disability: "Disability",
-    status: "Status",
-    status_label: "Politically repressed or NRM person",
-    none: "None",
-    service: "Service",
-    old_age: "Old Age",
-    group_1: "Grp 1",
-    group_2: "Grp 2",
-    group_3: "Grp 3",
-    results_title: "Results",
-    gross_salary: "Gross Salary (On paper)",
-    social_tax: "Social Security Tax",
-    income_tax: "Personal Income Tax",
-    reliefs_title: "Applied Reliefs",
-    min_wage_error: "Minimum wage",
-    employer_costs: "Employer Costs",
-    risk_duty: "Risk Duty",
-    total_cost: "Total Cost",
-    final_net: "Net Salary (In hand)",
-    summary: {
-      calc_prefix: "Calculation for",
-      period_month: "monthly",
-      period_year: "yearly",
-      salary: "salary",
-      book_yes: "Tax book is submitted to employer.",
-      book_no: "Tax book is not submitted to employer.",
-      dep_prefix: "Registered dependents:",
-      status_prefix: "Applied status:",
-      pension_old: "old-age pensioner",
-      pension_service: "service pensioner",
-      disability: "group disability",
-      repressed: "repressed person"
-    },
-    tooltip: {
-      title1: "1. Politically Repressed Person (Victim)",
-      desc1: "Status granted to people who suffered from communist or Nazi regime repressions. Includes:",
-      list1: [
-        { b: "Deported:", t: "People deported (e.g., in 1941 or 1949) or settled in special camps." },
-        { b: "Imprisoned:", t: "Persons held in prisons, camps, or ghettos for political or national reasons." },
-        { b: "Born in exile:", t: "Children born to parents while in settlement during repressions." }
-      ],
-      title2: "2. NRM Person (National Resistance Movement)",
-      desc2: "Status granted to people who actively resisted occupation regimes. Includes:",
-      list2: [
-        { b: "Armed resistance:", t: "National partisans ('Forest Brothers') and others fighting with arms." },
-        { b: "Unarmed resistance:", t: "Underground members, distributors of independence ideas." }
-      ]
-    },
-    tax_env: "tax environment",
-    min_wage_info: "Min wage",
-    non_taxable: "Non-taxable min",
-    fixed: "Fixed",
-    relief_min: "Non-taxable minimum",
-    relief_dep: "For dependents",
-    relief_dis: "For disability",
-    relief_rep: "For repressed status",
-    no_reliefs: "No reliefs applied"
-  },
-  ru: {
-    flag: FlagRU,
-    label: "RU",
-    title: "Калькулятор зарплаты",
-    subtitle: "Расчёт зарплаты в Латвии",
-    gross: "Брутто",
-    net: "Нетто",
-    gross_full: "Брутто (На бумаге)",
-    net_full: "Нетто (На руки)",
-    gross_to_net: "Брутто → Нетто (на руки)",
-    net_to_gross: "Нетто → Брутто (на бумаге)",
-    monthly: "В месяц",
-    yearly: "В год",
-    salary_monthly: "Зарплата в месяц",
-    salary_yearly: "Зарплата в год",
-    dependents: "Иждивенцы",
-    tax_book: "Налоговая книжка",
-    submitted: "Подана работодателю",
-    not_submitted: "Не подана работодателю",
-    pension: "Пенсия",
-    disability: "Инвалидность",
-    status: "Статус",
-    status_label: "Политически репрессированное лицо или участник НДС",
-    none: "Нет",
-    service: "Выслуга",
-    old_age: "Возраст",
-    group_1: "1 гр",
-    group_2: "2 гр",
-    group_3: "3 гр",
-    results_title: "Результат",
-    gross_salary: "Брутто зарплата (на бумаге)",
-    social_tax: "Социальный налог",
-    income_tax: "Подоходный налог",
-    reliefs_title: "Примененные льготы",
-    min_wage_error: "Минимальная зарплата",
-    employer_costs: "Расходы работодателя",
-    risk_duty: "Пошлина риска",
-    total_cost: "Всего расходов",
-    final_net: "Нетто зарплата (на руки)",
-    summary: {
-      calc_prefix: "Расчет для",
-      period_month: "месячной",
-      period_year: "годовой",
-      salary: "зарплаты",
-      book_yes: "Налоговая книжка подана работодателю.",
-      book_no: "Налоговая книжка не подана работодателю.",
-      dep_prefix: "Зарегистрировано иждивенцев:",
-      status_prefix: "Применен статус:",
-      pension_old: "пенсионер по возрасту",
-      pension_service: "пенсионер по выслуге",
-      disability: "группа инвалидности",
-      repressed: "репрессированное лицо"
-    },
-    tooltip: {
-      title1: "1. Политически репрессированное лицо (Жертва)",
-      desc1: "Статус присваивается людям, пострадавшим от репрессий коммунистического или нацистского режимов. Включает:",
-      list1: [
-        { b: "Высланные:", t: "Люди, депортированные (напр. в 1941 или 1949) или поселенные в спецлагерях." },
-        { b: "Заключенные:", t: "Лица, содержавшиеся в тюрьмах, лагерях или гетто по политическим мотивам." },
-        { b: "Родившиеся в ссылке:", t: "Дети, родившиеся у родителей во время нахождения в ссылке." }
-      ],
-      title2: "2. Участник национального движения сопротивления (Борец)",
-      desc2: "Статус присваивается людям, активно сопротивлявшимся оккупационным режимам. Включает:",
-      list2: [
-        { b: "Вооруженное сопротивление:", t: "Национальные партизаны («лесные братья») и др." },
-        { b: "Невооруженное сопротивление:", t: "Подпольщики, распространители идей независимости." }
-      ]
-    },
-    tax_env: "налоговая среда",
     min_wage_info: "Мин. зарплата",
     non_taxable: "Необлагаемый минимум",
     fixed: "Фикс.",
@@ -602,7 +446,7 @@ const SalaryCalculator = () => {
           
           <div className="flex flex-col gap-6 h-full">
              
-             {/* Switcher */}
+             {/* Switcher - UPDATED FOR MOBILE TEXT */}
              <div className="bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl flex relative isolate">
                 {[
                   { id: 'gross', label: t.gross_to_net },
@@ -611,7 +455,8 @@ const SalaryCalculator = () => {
                   <button
                     key={option.id}
                     onClick={() => setMode(option.id)}
-                    className={`flex-1 py-3 text-sm font-bold rounded-xl transition-colors relative z-10 ${
+                    // Added: text-[10px] sm:text-xs md:text-sm and whitespace-normal leading-tight
+                    className={`flex-1 py-3 px-2 text-[10px] sm:text-xs md:text-sm font-bold rounded-xl transition-colors relative z-10 whitespace-normal leading-tight flex items-center justify-center text-center ${
                       mode === option.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
                     }`}
                   >
@@ -867,10 +712,11 @@ const SalaryCalculator = () => {
                 </div>
               </div>
               <div className="h-px bg-slate-700/50 my-4"></div>
+              {/* UPDATED NET SALARY BLOCK FOR MOBILE */}
               <div className="pt-2">
-                <div className="flex justify-between items-end">
-                   <span className="text-sm font-medium text-emerald-400">{t.final_net}</span>
-                   <div className="text-5xl font-bold text-emerald-400 tracking-tight"><AnimatedCounter value={displayVal(results.net)} /></div>
+                <div className="flex flex-col items-start sm:flex-row sm:justify-between sm:items-end gap-1 sm:gap-0">
+                   <span className="text-sm font-medium text-emerald-400 whitespace-nowrap">{t.final_net}</span>
+                   <div className="text-5xl font-bold text-emerald-400 tracking-tight leading-none"><AnimatedCounter value={displayVal(results.net)} /></div>
                 </div>
               </div>
             </div>
@@ -896,9 +742,9 @@ const Row = ({ label, value, size = 'md', isNegative = false, isWhite = false, i
   const textColor = isWhite ? 'text-white' : isNegative ? 'text-red-300' : isNeutral ? 'text-slate-500' : 'text-slate-300';
   const labelColor = isWhite ? 'text-white' : isNeutral ? 'text-slate-500' : 'text-slate-400';
   return (
-    <div className={`flex justify-between items-center`}>
-      <span className={`${textSize} ${labelColor}`}>{label}</span>
-      <span className={`tabular-nums ${textSize} ${textColor} font-medium`}>{isNegative && "-"}<AnimatedCounter value={value} /></span>
+    <div className={`flex justify-between items-start gap-2`}> {/* Added items-start and gap-2 for text wrapping */}
+      <span className={`${textSize} ${labelColor} leading-tight`}>{label}</span> {/* Added leading-tight */}
+      <span className={`tabular-nums ${textSize} ${textColor} font-medium whitespace-nowrap shrink-0`}>{isNegative && "-"}<AnimatedCounter value={value} /></span> {/* Added whitespace-nowrap and shrink-0 */}
     </div>
   );
 };
