@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, Wallet, 
-  Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair, Gavel, Globe 
+  Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair 
 } from 'lucide-react';
 import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
 
 // --- FLAG ICONS ---
 
-const FlagLV = ({ className = "" }) => (
+const FlagLV = ({ className = "" }: { className?: string }) => (
   <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
     <rect width="32" height="24" fill="#9E3039"/>
     <rect y="9.6" width="32" height="4.8" fill="#FFF"/>
   </svg>
 );
 
-const FlagRU = ({ className = "" }) => (
+const FlagRU = ({ className = "" }: { className?: string }) => (
   <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
     <rect width="32" height="24" fill="#FFF"/>
     <rect y="8" width="32" height="8" fill="#0039A6"/>
@@ -22,7 +22,7 @@ const FlagRU = ({ className = "" }) => (
   </svg>
 );
 
-const FlagEN = ({ className = "" }) => (
+const FlagEN = ({ className = "" }: { className?: string }) => (
   <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
     <rect width="32" height="24" fill="#012169"/>
     <path d="M0 0 L32 24 M32 0 L0 24" stroke="#FFF" strokeWidth="3"/>
@@ -293,7 +293,7 @@ type TaxRules = {
   specialNonTaxable: number;
 };
 
-// --- UPDATED TAX CONFIG FOR 2025/2026 ---
+// --- TAX CONFIG ---
 const TAX_CONFIG: Record<number, TaxRules> = {
   2025: {
     minWage: 740,
@@ -302,10 +302,10 @@ const TAX_CONFIG: Record<number, TaxRules> = {
     vsaoiEmployer: 0.2359,
     // Pensioner (Old Age) Rates
     vsaoiPensionerEmployee: 0.0925, 
-    vsaoiPensionerEmployer: 0.2077, // Fixed to 20.77
+    vsaoiPensionerEmployer: 0.2077, 
     // Service Pensioner Rates
-    vsaoiServiceEmployee: 0.0976, // Fixed to 9.76
-    vsaoiServiceEmployer: 0.2194, // Fixed to 21.94
+    vsaoiServiceEmployee: 0.0976, 
+    vsaoiServiceEmployer: 0.2194, 
     
     iinRateLow: 0.255,
     iinRateHigh: 0.33,
@@ -341,8 +341,8 @@ const TAX_CONFIG: Record<number, TaxRules> = {
   }
 };
 
-// --- Helper: Safe Rounding (Banker's rounding simulation / Standard Round) ---
-const round = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
+// --- Helper: Strict Floor Rounding (Rounding Down) ---
+const round = (num: number) => Math.floor(num * 100) / 100;
 
 // --- Helper: Safe Animated Counter ---
 const AnimatedCounter = ({ value, className }: { value: number | undefined, className?: string }) => {
@@ -390,7 +390,7 @@ const SalaryCalculator = () => {
     try {
       const safeGross = Math.max(0, grossVal || 0);
 
-      // 1. VSAOI Rates (Updated logic for all types)
+      // 1. VSAOI Rates
       let rateEmp = rules.vsaoiEmployee;
       let rateEmployer = rules.vsaoiEmployer;
 
@@ -524,40 +524,21 @@ const SalaryCalculator = () => {
   const vsaoiLabel = `${t.social_tax} (${((results.rateEmp || rules.vsaoiEmployee) * 100).toFixed(2)}%)`;
   const employerVsaoiLabel = `${t.social_tax} (${((results.rateEmployer || rules.vsaoiEmployer) * 100).toFixed(2)}%)`;
 
-  // --- Natural Language Summary Generator ---
+  // --- Summary ---
   const generateSummary = () => {
     const sentences = [];
-    
     const modeText = mode === 'gross' ? t.gross.toLowerCase() : t.net.toLowerCase();
     const periodText = period === 'monthly' ? t.summary.period_month : t.summary.period_year;
-
-    // 1. Base Info
     sentences.push(`${t.summary.calc_prefix} ${year}. ${t.summary.period_year} ${periodText} ${modeText} ${t.summary.salary}.`);
-
-    // 2. Tax Book
-    if (taxBookSubmitted) {
-        sentences.push(t.summary.book_yes);
-    } else {
-        sentences.push(t.summary.book_no);
-    }
-
-    // 3. Dependents
-    if (dependents > 0) {
-        sentences.push(`${t.summary.dep_prefix} ${dependents}.`);
-    }
-
-    // 4. Statuses
+    if (taxBookSubmitted) sentences.push(t.summary.book_yes);
+    else sentences.push(t.summary.book_no);
+    if (dependents > 0) sentences.push(`${t.summary.dep_prefix} ${dependents}.`);
     const statusParts = [];
     if (pensionType === 'old_age') statusParts.push(t.summary.pension_old);
     if (pensionType === 'service') statusParts.push(t.summary.pension_service);
     if (disabilityGroup !== 'none') statusParts.push(`${disabilityGroup}. ${t.summary.disability}`);
     if (isRepressed) statusParts.push(t.summary.repressed);
-
-    if (statusParts.length > 0) {
-        const statusString = statusParts.join(", ");
-        sentences.push(`${t.summary.status_prefix} ${statusString}.`);
-    }
-
+    if (statusParts.length > 0) sentences.push(`${t.summary.status_prefix} ${statusParts.join(", ")}.`);
     return sentences.join(" ");
   };
 
@@ -565,7 +546,6 @@ const SalaryCalculator = () => {
     if (!rules) return null;
     const numericAmount = typeof amount === 'number' ? amount : 0;
     const minWageThreshold = period === 'yearly' ? rules.minWage * 12 : rules.minWage;
-    
     if (numericAmount > 0 && numericAmount < minWageThreshold) {
       return (
         <p className="text-xs text-red-500 mt-2 font-medium flex items-center gap-1 pl-1">
@@ -579,7 +559,7 @@ const SalaryCalculator = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800">
       
-      {/* HEADER WITH LANGUAGE SWITCHER */}
+      {/* HEADER */}
       <div className="w-full max-w-6xl flex justify-end mb-4 px-4 relative">
          <div className="bg-slate-100 p-1 rounded-xl flex relative isolate gap-1">
             {(['lv', 'ru', 'en'] as const).map((l) => {
@@ -685,10 +665,8 @@ const SalaryCalculator = () => {
                 {getMinWageError()}
              </div>
 
-             {/* Main Controls Grid */}
+             {/* Grid */}
              <div className="grid md:grid-cols-2 gap-6">
-                
-                {/* 1. DEPENDENTS */}
                 <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 flex flex-col justify-between">
                    <label className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
                       <Users size={18} className="text-indigo-500" />
@@ -701,7 +679,6 @@ const SalaryCalculator = () => {
                    </div>
                 </div>
 
-                {/* 2. TAX BOOK */}
                 <motion.div onClick={() => setTaxBookSubmitted(!taxBookSubmitted)} whileTap={{ scale: 0.98 }} className={`group cursor-pointer rounded-3xl border p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${taxBookSubmitted ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-slate-200'}`}>
                   <div className="flex justify-between items-start z-10 h-full">
                      <div className="flex flex-col justify-between h-full">
@@ -716,11 +693,10 @@ const SalaryCalculator = () => {
                 </motion.div>
              </div>
 
-             {/* --- SECONDARY SECTION --- */}
+             {/* Secondary */}
              <div className="border-t border-slate-100 pt-6 mt-2">
-               
                <div className="space-y-5">
-                 {/* 3. PENSION */}
+                 {/* Pension */}
                  <div>
                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                       <Armchair size={16} />
@@ -743,8 +719,6 @@ const SalaryCalculator = () => {
 
                  {/* Row for Disability & Status */}
                  <div className="grid md:grid-cols-2 gap-6">
-                    
-                    {/* 4. DISABILITY (Flexible Column) */}
                     <div className="flex flex-col h-full">
                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                           <Accessibility size={16} />
@@ -765,7 +739,6 @@ const SalaryCalculator = () => {
                        </div>
                     </div>
 
-                    {/* 5. STATUS (Flexible Column with Wrapping Text & Tooltip) */}
                     <div className="flex flex-col h-full">
                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                          <Landmark size={16} />
@@ -780,8 +753,6 @@ const SalaryCalculator = () => {
                             <span className={`text-[10px] font-bold leading-tight whitespace-normal ${isRepressed ? 'text-indigo-900' : 'text-slate-500'}`}>
                               {t.status_label}
                             </span>
-                            
-                            {/* INFO BUTTON */}
                             <button 
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setShowRepressedTooltip(!showRepressedTooltip); }}
@@ -791,8 +762,6 @@ const SalaryCalculator = () => {
                             >
                               <Info size={14} />
                             </button>
-
-                            {/* TOOLTIP CONTENT */}
                             <AnimatePresence>
                               {showRepressedTooltip && (
                                 <motion.div 
@@ -807,19 +776,14 @@ const SalaryCalculator = () => {
                                       <h4 className="text-[11px] font-bold text-indigo-900 mb-1 leading-tight">{t.tooltip.title1}</h4>
                                       <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{t.tooltip.desc1}</p>
                                       <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3 marker:text-indigo-400">
-                                        {t.tooltip.list1.map((item, i) => (
-                                          <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>
-                                        ))}
+                                        {t.tooltip.list1.map((item, i) => <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>)}
                                       </ul>
                                     </div>
-
                                     <div>
                                       <h4 className="text-[11px] font-bold text-indigo-900 mb-1 leading-tight">{t.tooltip.title2}</h4>
                                       <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{t.tooltip.desc2}</p>
                                       <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3 marker:text-indigo-400">
-                                        {t.tooltip.list2.map((item, i) => (
-                                          <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>
-                                        ))}
+                                        {t.tooltip.list2.map((item, i) => <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>)}
                                       </ul>
                                     </div>
                                   </div>
@@ -835,7 +799,7 @@ const SalaryCalculator = () => {
                </div>
              </div>
 
-             {/* --- Bottom Section: Year & Info --- */}
+             {/* Footer */}
              <div className="pt-4 border-t border-slate-100 mt-auto">
                <div className="flex items-center justify-between mb-4">
                   <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} /> {t.summary.calc_prefix}</span>
@@ -847,7 +811,6 @@ const SalaryCalculator = () => {
                     ))}
                   </div>
                </div>
-
                <div className="flex gap-4 items-start p-5 rounded-3xl bg-slate-50/80 border border-slate-100 text-xs text-slate-600">
                   <Info className="w-5 h-5 shrink-0 mt-0.5 text-indigo-400" />
                   <div>
@@ -871,14 +834,10 @@ const SalaryCalculator = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE: Results */}
+        {/* RIGHT SIDE */}
         <div className="p-10 lg:w-5/12 bg-slate-900 text-slate-300 flex flex-col justify-between">
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-6">
-            
-            {/* Employee Section */}
             <div className="bg-slate-800/50 rounded-3xl border border-slate-700/50 p-8 flex-1 flex flex-col justify-start">
-              
-              {/* Header: Rezultāts + Natural Language Summary */}
               <div className="mb-8">
                  <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                     <Wallet size={14} /> {t.results_title} ({year})
@@ -899,23 +858,11 @@ const SalaryCalculator = () => {
               <div className="bg-slate-900/50 rounded-2xl p-4 border border-slate-700/50 mb-6">
                 <div className="flex items-center gap-2 mb-3"><TrendingDown className="text-slate-500 w-3 h-3" /><span className="text-[10px] font-bold text-slate-500 uppercase">{t.reliefs_title}</span></div>
                 <div className="space-y-2">
-                   {results.nonTaxableMinApplied > 0 && (
-                     <Row label={t.relief_min} value={displayVal(results.nonTaxableMinApplied)} size="sm" isNeutral />
-                   )}
-                   {results.reliefDependents > 0 && (
-                     <Row label={t.relief_dep} value={displayVal(results.reliefDependents)} size="sm" isNeutral />
-                   )}
-                   {results.reliefDisability > 0 && (
-                     <Row label={t.relief_dis} value={displayVal(results.reliefDisability)} size="sm" isNeutral />
-                   )}
-                   {results.reliefRepressed > 0 && (
-                     <Row label={t.relief_rep} value={displayVal(results.reliefRepressed)} size="sm" isNeutral />
-                   )}
-                   
-                   {/* Fallback if no reliefs */}
-                   {results.nonTaxableMinApplied === 0 && results.totalReliefsApplied === 0 && (
-                     <span className="text-[10px] text-slate-500 italic">{t.no_reliefs}</span>
-                   )}
+                   {results.nonTaxableMinApplied > 0 && <Row label={t.relief_min} value={displayVal(results.nonTaxableMinApplied)} size="sm" isNeutral />}
+                   {results.reliefDependents > 0 && <Row label={t.relief_dep} value={displayVal(results.reliefDependents)} size="sm" isNeutral />}
+                   {results.reliefDisability > 0 && <Row label={t.relief_dis} value={displayVal(results.reliefDisability)} size="sm" isNeutral />}
+                   {results.reliefRepressed > 0 && <Row label={t.relief_rep} value={displayVal(results.reliefRepressed)} size="sm" isNeutral />}
+                   {results.nonTaxableMinApplied === 0 && results.totalReliefsApplied === 0 && <span className="text-[10px] text-slate-500 italic">{t.no_reliefs}</span>}
                 </div>
               </div>
               <div className="h-px bg-slate-700/50 my-4"></div>
@@ -927,7 +874,6 @@ const SalaryCalculator = () => {
               </div>
             </div>
 
-            {/* Employer Section */}
             <div className="bg-slate-800/30 rounded-3xl border border-slate-800 p-8">
                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t.employer_costs}</h3>
                <div className="space-y-3 mb-4">
