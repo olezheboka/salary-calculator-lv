@@ -4,6 +4,7 @@ import {
   Users, BookCheck, Landmark, Accessibility, Armchair
 } from 'lucide-react';
 import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
+import { Analytics } from '@vercel/analytics/react';
 
 // --- FLAG ICONS ---
 
@@ -998,6 +999,7 @@ const SalaryCalculator = () => {
           </div>
         </div>
       </div>
+      <Analytics />
     </div>
   );
 };
