@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { 
-  Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, Wallet, 
-  Users, BookCheck, Landmark, Briefcase, Ban, Clock, Accessibility, Armchair, User
+  Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, 
+  Users, BookCheck, Landmark, Accessibility, Armchair
 } from 'lucide-react';
 import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
 
