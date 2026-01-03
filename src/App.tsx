@@ -801,7 +801,6 @@ const SalaryCalculator = () => {
                         { id: 'old_age', label: t.old_age }
                       ].map((opt) => (
                         <button key={opt.id} onClick={() => setPensionType(opt.id as any)} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
-                          {/* REMOVED ICON FROM BUTTONS AS REQUESTED */}
                           <span>{opt.label}</span>
                           {pensionType === opt.id && <motion.div layoutId="pension-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                         </button>
@@ -910,13 +909,37 @@ const SalaryCalculator = () => {
                      <ul className="space-y-1.5 pl-1">
                        {year === 2026 ? (
                          <>
-                           <li className="flex items-center gap-2"><ArrowUpRight size={14} className="text-emerald-500" />{t.min_wage_info}: <strong>€780</strong> (+40€)</li>
-                           <li className="flex items-center gap-2"><ArrowUpRight size={14} className="text-emerald-500" />{t.non_taxable}: <strong>€550</strong> (+40€)</li>
+                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                             <span className="flex items-center gap-2">
+                               <ArrowUpRight size={14} className="text-emerald-500" />
+                               {t.min_wage_info}:
+                             </span>
+                             <strong className="pl-6 sm:pl-0">€780 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                           </li>
+                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                             <span className="flex items-center gap-2">
+                               <ArrowUpRight size={14} className="text-emerald-500" />
+                               {t.non_taxable}:
+                             </span>
+                             <strong className="pl-6 sm:pl-0">€550 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                           </li>
                          </>
                        ) : (
                          <>
-                           <li className="flex items-center gap-2"><ArrowUpRight size={14} className="text-emerald-500" />{t.min_wage_info}: <strong>€740</strong> (+40€)</li>
-                           <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-emerald-500" />{t.non_taxable}: <strong>€510</strong> ({t.fixed})</li>
+                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                             <span className="flex items-center gap-2">
+                               <ArrowUpRight size={14} className="text-emerald-500" />
+                               {t.min_wage_info}:
+                             </span>
+                             <strong className="pl-6 sm:pl-0">€740 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                           </li>
+                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                             <span className="flex items-center gap-2">
+                               <CheckCircle2 size={14} className="text-emerald-500" />
+                               {t.non_taxable}:
+                             </span>
+                             <strong className="pl-6 sm:pl-0">€510 <span className="font-normal text-slate-500">({t.fixed})</span></strong>
+                           </li>
                          </>
                        )}
                      </ul>
