@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2,
   Users, BookCheck, Landmark, Accessibility, Armchair
@@ -325,6 +325,32 @@ type TaxRules = {
   specialNonTaxable: number;
 };
 
+type TaxCalculationResult = {
+  gross: number;
+  net: number;
+  vsaoiEmployee: number;
+  iin: number;
+  employerVsaoi: number;
+  riskDuty: number;
+  totalEmployerCost: number;
+  nonTaxableMinApplied: number;
+  reliefDependents: number;
+  reliefDisability: number;
+  reliefRepressed: number;
+  totalReliefsApplied: number;
+  taxBase: number;
+  rateEmp: number;
+  rateEmployer: number;
+};
+
+type TableRowProps = {
+  label: string;
+  value: number | undefined;
+  isNeutral?: boolean;
+  isBold?: boolean;
+  size?: 'sm' | 'md';
+};
+
 // --- TAX CONFIG ---
 const TAX_CONFIG: Record<number, TaxRules> = {
   2025: {
@@ -382,7 +408,7 @@ const AnimatedCounter = ({ value, className }: { value: number | undefined, clas
   const rounded = useTransform(count, (latest) => {
     try {
       return new Intl.NumberFormat('lv-LV', { style: 'currency', currency: 'EUR' }).format(latest);
-    } catch (e) {
+    } catch {
       return "€0.00";
     }
   });
@@ -391,7 +417,7 @@ const AnimatedCounter = ({ value, className }: { value: number | undefined, clas
     const target = (typeof value === 'number' && Number.isFinite(value)) ? value : 0;
     const controls = animate(count, target, { duration: 0.75, ease: "easeOut" });
     return controls.stop;
-  }, [value]);
+  }, [value, count]);
 
   return <motion.span className={className}>{rounded}</motion.span>;
 };
@@ -422,7 +448,7 @@ const SalaryCalculator = () => {
   const [lang, setLang] = useState<'lv' | 'ru' | 'en'>(initial.lang!);
   const [year, setYear] = useState<number>(initial.year!);
   const [mode, setMode] = useState(initial.mode!);
-  const [period, setPeriod] = useState<'monthly' | 'yearly'>(initial.period as any);
+  const [period, setPeriod] = useState<'monthly' | 'yearly'>(initial.period as 'monthly' | 'yearly');
 
   const [amount, setAmount] = useState<number | string>(initial.amount!);
   const [dependents, setDependents] = useState(initial.dependents!);
@@ -467,7 +493,7 @@ const SalaryCalculator = () => {
   };
 
   // --- Calculation Logic ---
-  const calculateTaxFromGross = (grossVal: number, depCount: number, hasBook: boolean) => {
+  const calculateTaxFromGross = useCallback((grossVal: number, depCount: number, hasBook: boolean): TaxCalculationResult => {
     try {
       const safeGross = Math.max(0, grossVal || 0);
 
@@ -546,16 +572,16 @@ const SalaryCalculator = () => {
         rateEmp: rateEmp,
         rateEmployer: rateEmployer
       };
-    } catch (error) {
+    } catch {
       return {
         gross: 0, net: 0, vsaoiEmployee: 0, iin: 0, employerVsaoi: 0, riskDuty: 0, totalEmployerCost: 0,
         nonTaxableMinApplied: 0, reliefDependents: 0, reliefDisability: 0, reliefRepressed: 0,
         totalReliefsApplied: 0, taxBase: 0, rateEmp: 0, rateEmployer: 0
       };
     }
-  };
+  }, [rules, pensionType, disabilityGroup, isRepressed]);
 
-  const calculateGrossFromNet = (targetNet: number, depCount: number, hasBook: boolean) => {
+  const calculateGrossFromNet = useCallback((targetNet: number, depCount: number, hasBook: boolean): TaxCalculationResult => {
     try {
       let low = targetNet;
       let high = targetNet * 2.5;
@@ -575,23 +601,19 @@ const SalaryCalculator = () => {
         calculatedGross = mid;
       }
       return calculateTaxFromGross(calculatedGross, depCount, hasBook);
-    } catch (e) {
+    } catch {
       return calculateTaxFromGross(0, depCount, hasBook);
     }
-  };
+  }, [calculateTaxFromGross]);
 
-  const [results, setResults] = useState<any>({});
-
-  useEffect(() => {
+  const results: TaxCalculationResult = useMemo(() => {
     let inputVal = typeof amount === 'string' && amount === '' ? 0 : Number(amount);
     if (period === 'yearly') inputVal = inputVal / 12;
 
-    const res = mode === 'gross'
+    return mode === 'gross'
       ? calculateTaxFromGross(inputVal, dependents, taxBookSubmitted)
       : calculateGrossFromNet(inputVal, dependents, taxBookSubmitted);
-
-    setResults(res);
-  }, [amount, dependents, taxBookSubmitted, mode, year, period, pensionType, disabilityGroup, isRepressed, lang]);
+  }, [amount, dependents, taxBookSubmitted, mode, period, calculateTaxFromGross, calculateGrossFromNet]);
 
   const displayVal = (val: number | undefined) => {
     if (val === undefined) return 0;
@@ -724,7 +746,7 @@ const SalaryCalculator = () => {
                   ].map((opt) => (
                     <button
                       key={opt.id}
-                      onClick={() => setPeriod(opt.id as any)}
+                      onClick={() => setPeriod(opt.id as 'monthly' | 'yearly')}
                       className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 ${period === opt.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
                         }`}
                     >
@@ -798,7 +820,7 @@ const SalaryCalculator = () => {
                       { id: 'service', label: t.service },
                       { id: 'old_age', label: t.old_age }
                     ].map((opt) => (
-                      <button key={opt.id} onClick={() => setPensionType(opt.id as any)} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
+                      <button key={opt.id} onClick={() => setPensionType(opt.id as 'none' | 'service' | 'old_age')} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
                         <span>{opt.label}</span>
                         {pensionType === opt.id && <motion.div layoutId="pension-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                       </button>
@@ -820,7 +842,7 @@ const SalaryCalculator = () => {
                         { id: '2', label: t.group_2 },
                         { id: '3', label: t.group_3 }
                       ].map((grp) => (
-                        <button key={grp.id} onClick={() => setDisabilityGroup(grp.id as any)} className={`flex-1 flex items-center justify-center py-2 text-[10px] font-bold rounded-xl transition-all relative z-10 ${disabilityGroup === grp.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
+                        <button key={grp.id} onClick={() => setDisabilityGroup(grp.id as 'none' | '1' | '2' | '3')} className={`flex-1 flex items-center justify-center py-2 text-[10px] font-bold rounded-xl transition-all relative z-10 ${disabilityGroup === grp.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
                           {grp.label}
                           {disabilityGroup === grp.id && <motion.div layoutId="disability-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                         </button>
@@ -1030,7 +1052,7 @@ const TableRows = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const TableRow = ({ label, value, isNeutral = false, isBold = false, size = 'md' }: any) => {
+const TableRow = ({ label, value, isNeutral = false, isBold = false, size = 'md' }: TableRowProps) => {
   const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
   const textColor = isNeutral ? 'text-slate-500' : 'text-slate-700';
   const valueColor = isNeutral ? 'text-slate-500' : isBold ? 'text-slate-900' : 'text-slate-700';
