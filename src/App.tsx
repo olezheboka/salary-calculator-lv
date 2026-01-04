@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { 
-  Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2, 
+import {
+  Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2,
   Users, BookCheck, Landmark, Accessibility, Armchair
 } from 'lucide-react';
 import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
@@ -10,26 +10,26 @@ import { Analytics } from '@vercel/analytics/react';
 
 const FlagLV = ({ className = "" }: { className?: string }) => (
   <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="32" height="24" fill="#9E3039"/>
-    <rect y="9.6" width="32" height="4.8" fill="#FFF"/>
+    <rect width="32" height="24" fill="#9E3039" />
+    <rect y="9.6" width="32" height="4.8" fill="#FFF" />
   </svg>
 );
 
 const FlagRU = ({ className = "" }: { className?: string }) => (
   <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="32" height="24" fill="#FFF"/>
-    <rect y="8" width="32" height="8" fill="#0039A6"/>
-    <rect y="16" width="32" height="8" fill="#D52B1E"/>
+    <rect width="32" height="24" fill="#FFF" />
+    <rect y="8" width="32" height="8" fill="#0039A6" />
+    <rect y="16" width="32" height="8" fill="#D52B1E" />
   </svg>
 );
 
 const FlagEN = ({ className = "" }: { className?: string }) => (
   <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="32" height="24" fill="#012169"/>
-    <path d="M0 0 L32 24 M32 0 L0 24" stroke="#FFF" strokeWidth="3"/>
-    <path d="M0 0 L32 24 M32 0 L0 24" stroke="#C8102E" strokeWidth="1.5"/>
-    <path d="M16 0 V24 M0 12 H32" stroke="#FFF" strokeWidth="5"/>
-    <path d="M16 0 V24 M0 12 H32" stroke="#C8102E" strokeWidth="3"/>
+    <rect width="32" height="24" fill="#012169" />
+    <path d="M0 0 L32 24 M32 0 L0 24" stroke="#FFF" strokeWidth="3" />
+    <path d="M0 0 L32 24 M32 0 L0 24" stroke="#C8102E" strokeWidth="1.5" />
+    <path d="M16 0 V24 M0 12 H32" stroke="#FFF" strokeWidth="5" />
+    <path d="M16 0 V24 M0 12 H32" stroke="#C8102E" strokeWidth="3" />
   </svg>
 );
 
@@ -50,28 +50,28 @@ const TRANSLATIONS = {
     yearly: "Gadā",
     salary_monthly: "Alga mēnesī",
     salary_yearly: "Alga gadā",
-    
+
     // Dynamic labels
     gross_salary_monthly: "Bruto alga mēnesī",
     net_salary_monthly: "Neto alga mēnesī",
     gross_salary_yearly: "Bruto alga gadā",
     net_salary_yearly: "Neto alga gadā",
-    
+
     dependents: "Apgādājamie",
     tax_book: "Nodokļu grāmatiņa",
     submitted: "Iesniegta pie darba devēja",
     not_submitted: "Nav iesniegta pie darba devēja",
-    
+
     pension: "Pensija",
     disability: "Invaliditāte",
     status: "Statuss",
     status_label: "Politiski represēta vai NPK persona",
-    
+
     // Pension types
     none: "Nav",
     service: "Izdienas vai speciālā",
     old_age: "Vecuma",
-    
+
     group_1: "1. gr",
     group_2: "2. gr",
     group_3: "3. gr",
@@ -149,17 +149,17 @@ const TRANSLATIONS = {
     tax_book: "Tax Book",
     submitted: "Submitted to employer",
     not_submitted: "Not submitted to employer",
-    
+
     pension: "Pension",
     disability: "Disability",
     status: "Status",
     status_label: "Politically repressed or NRM person",
-    
+
     // Pension types
     none: "None",
     service: "Service or Special",
     old_age: "Old Age",
-    
+
     group_1: "Grp 1",
     group_2: "Grp 2",
     group_3: "Grp 3",
@@ -237,17 +237,17 @@ const TRANSLATIONS = {
     tax_book: "Налоговая книжка",
     submitted: "Подана работодателю",
     not_submitted: "Не подана работодателю",
-    
+
     pension: "Пенсия",
     disability: "Инвалидность",
     status: "Статус",
     status_label: "Политически репрессированное лицо или участник НДС",
-    
+
     // Pension types
     none: "Нет",
     service: "По выслуге лет или специальная",
     old_age: "По возрасту",
-    
+
     group_1: "1 гр",
     group_2: "2 гр",
     group_3: "3 гр",
@@ -333,12 +333,12 @@ const TAX_CONFIG: Record<number, TaxRules> = {
     vsaoiEmployee: 0.105,
     vsaoiEmployer: 0.2359,
     // Pensioner (Old Age) Rates
-    vsaoiPensionerEmployee: 0.0925, 
-    vsaoiPensionerEmployer: 0.2077, 
+    vsaoiPensionerEmployee: 0.0925,
+    vsaoiPensionerEmployer: 0.2077,
     // Service Pensioner Rates
-    vsaoiServiceEmployee: 0.0976, 
-    vsaoiServiceEmployer: 0.2194, 
-    
+    vsaoiServiceEmployee: 0.0976,
+    vsaoiServiceEmployer: 0.2194,
+
     iinRateLow: 0.255,
     iinRateHigh: 0.33,
     iinThreshold: 8775,
@@ -355,10 +355,10 @@ const TAX_CONFIG: Record<number, TaxRules> = {
     vsaoiEmployee: 0.105,
     vsaoiEmployer: 0.2359,
     // Pensioner (Old Age) Rates
-    vsaoiPensionerEmployee: 0.0925, 
-    vsaoiPensionerEmployer: 0.2077, 
+    vsaoiPensionerEmployee: 0.0925,
+    vsaoiPensionerEmployer: 0.2077,
     // Service Pensioner Rates
-    vsaoiServiceEmployee: 0.0976, 
+    vsaoiServiceEmployee: 0.0976,
     vsaoiServiceEmployer: 0.2194,
 
     iinRateLow: 0.255,
@@ -400,9 +400,9 @@ const AnimatedCounter = ({ value, className }: { value: number | undefined, clas
 const getInitialState = () => {
   if (typeof window === 'undefined') return {};
   const params = new URLSearchParams(window.location.search);
-  
+
   return {
-    lang: (params.get('lang') === 'ru' || params.get('lang') === 'lv' ? params.get('lang') : 'en') as 'lv' | 'ru' | 'en',
+    lang: (params.get('lang') === 'ru' || params.get('lang') === 'en' ? params.get('lang') : 'lv') as 'lv' | 'ru' | 'en',
     year: params.get('year') ? Number(params.get('year')) : 2026,
     mode: params.get('mode') === 'net' ? 'net' : 'gross',
     period: params.get('period') === 'yearly' ? 'yearly' : 'monthly' as 'monthly' | 'yearly',
@@ -423,7 +423,7 @@ const SalaryCalculator = () => {
   const [year, setYear] = useState<number>(initial.year!);
   const [mode, setMode] = useState(initial.mode!);
   const [period, setPeriod] = useState<'monthly' | 'yearly'>(initial.period as any);
-  
+
   const [amount, setAmount] = useState<number | string>(initial.amount!);
   const [dependents, setDependents] = useState(initial.dependents!);
   const [taxBookSubmitted, setTaxBookSubmitted] = useState(initial.book!);
@@ -432,7 +432,7 @@ const SalaryCalculator = () => {
   const [pensionType, setPensionType] = useState<'none' | 'service' | 'old_age'>(initial.pension!);
   const [disabilityGroup, setDisabilityGroup] = useState<'none' | '1' | '2' | '3'>(initial.disability!);
   const [isRepressed, setIsRepressed] = useState(initial.repressed!);
-  
+
   // Update URL when state changes
   useEffect(() => {
     const params = new URLSearchParams();
@@ -484,26 +484,26 @@ const SalaryCalculator = () => {
       }
 
       const vsaoiEmp = round(safeGross * rateEmp);
-      
+
       // 2. Reliefs Breakdown
       let appliedNonTaxable = 0;
       let reliefDependents = 0;
       let reliefDisability = 0;
       let reliefRepressed = 0;
-      
+
       if (hasBook) {
         // Special Non-taxable minimum rule for Pensioners AND Disabled
         if (pensionType !== 'none' || disabilityGroup !== 'none') {
-           appliedNonTaxable = rules.specialNonTaxable; // 500 EUR
+          appliedNonTaxable = rules.specialNonTaxable; // 500 EUR
         } else {
-           appliedNonTaxable = rules.nonTaxableMin; // Standard 510/550
+          appliedNonTaxable = rules.nonTaxableMin; // Standard 510/550
         }
-        
+
         reliefDependents = round(depCount * rules.dependentRelief);
-        
+
         if (disabilityGroup === '1' || disabilityGroup === '2') reliefDisability = rules.disabilityRelief12;
         if (disabilityGroup === '3') reliefDisability = rules.disabilityRelief3;
-        
+
         if (isRepressed) reliefRepressed = rules.repressedRelief;
       }
 
@@ -516,7 +516,7 @@ const SalaryCalculator = () => {
       let iin = 0;
       if (taxBase > rules.iinThreshold) {
         const highPart = round(taxBase - rules.iinThreshold);
-        const lowPart = rules.iinThreshold; 
+        const lowPart = rules.iinThreshold;
         const iinLow = round(lowPart * rules.iinRateLow);
         const iinHigh = round(highPart * rules.iinRateHigh);
         iin = iinLow + iinHigh;
@@ -526,7 +526,7 @@ const SalaryCalculator = () => {
 
       const net = round(safeGross - vsaoiEmp - iin);
       const vsaoiEmployer = round(safeGross * rateEmployer);
-      const riskDuty = safeGross > 0 ? rules.riskDuty : 0; 
+      const riskDuty = safeGross > 0 ? rules.riskDuty : 0;
       const totalEmployerCost = round(safeGross + vsaoiEmployer + riskDuty);
 
       return {
@@ -547,10 +547,10 @@ const SalaryCalculator = () => {
         rateEmployer: rateEmployer
       };
     } catch (error) {
-      return { 
-        gross: 0, net: 0, vsaoiEmployee: 0, iin: 0, employerVsaoi: 0, riskDuty: 0, totalEmployerCost: 0, 
-        nonTaxableMinApplied: 0, reliefDependents: 0, reliefDisability: 0, reliefRepressed: 0, 
-        totalReliefsApplied: 0, taxBase: 0, rateEmp: 0, rateEmployer: 0 
+      return {
+        gross: 0, net: 0, vsaoiEmployee: 0, iin: 0, employerVsaoi: 0, riskDuty: 0, totalEmployerCost: 0,
+        nonTaxableMinApplied: 0, reliefDependents: 0, reliefDisability: 0, reliefRepressed: 0,
+        totalReliefsApplied: 0, taxBase: 0, rateEmp: 0, rateEmployer: 0
       };
     }
   };
@@ -558,7 +558,7 @@ const SalaryCalculator = () => {
   const calculateGrossFromNet = (targetNet: number, depCount: number, hasBook: boolean) => {
     try {
       let low = targetNet;
-      let high = targetNet * 2.5; 
+      let high = targetNet * 2.5;
       let calculatedGross = 0;
       let iterations = 0;
 
@@ -576,7 +576,7 @@ const SalaryCalculator = () => {
       }
       return calculateTaxFromGross(calculatedGross, depCount, hasBook);
     } catch (e) {
-       return calculateTaxFromGross(0, depCount, hasBook);
+      return calculateTaxFromGross(0, depCount, hasBook);
     }
   };
 
@@ -586,10 +586,10 @@ const SalaryCalculator = () => {
     let inputVal = typeof amount === 'string' && amount === '' ? 0 : Number(amount);
     if (period === 'yearly') inputVal = inputVal / 12;
 
-    const res = mode === 'gross' 
+    const res = mode === 'gross'
       ? calculateTaxFromGross(inputVal, dependents, taxBookSubmitted)
       : calculateGrossFromNet(inputVal, dependents, taxBookSubmitted);
-    
+
     setResults(res);
   }, [amount, dependents, taxBookSubmitted, mode, year, period, pensionType, disabilityGroup, isRepressed, lang]);
 
@@ -598,8 +598,8 @@ const SalaryCalculator = () => {
     return period === 'yearly' ? val * 12 : val;
   };
 
-  const iinLabel = results.taxBase > rules.iinThreshold 
-    ? `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}% / ${(rules.iinRateHigh * 100).toFixed(0)}%)` 
+  const iinLabel = results.taxBase > rules.iinThreshold
+    ? `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}% / ${(rules.iinRateHigh * 100).toFixed(0)}%)`
     : `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}%)`;
 
   const vsaoiLabel = `${t.social_tax} (${((results.rateEmp || rules.vsaoiEmployee) * 100).toFixed(2)}%)`;
@@ -610,10 +610,10 @@ const SalaryCalculator = () => {
     const sentences = [];
     const modeText = mode === 'gross' ? t.gross.toLowerCase() : t.net.toLowerCase();
     const periodText = period === 'monthly' ? t.summary.period_month : t.summary.period_year;
-    
+
     // New Logic: "Aprēķins veikts mēneša bruto algai (2026)"
     sentences.push(`${t.summary.calc_prefix} ${periodText} ${modeText} ${t.summary.salary} (${year}).`);
-    
+
     if (taxBookSubmitted) sentences.push(t.summary.book_yes);
     else sentences.push(t.summary.book_no);
     if (dependents > 0) sentences.push(`${t.summary.dep_prefix} ${dependents}.`);
@@ -646,378 +646,375 @@ const SalaryCalculator = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4 font-sans text-slate-800">
-      
+
       {/* HEADER */}
       <div className="w-full max-w-6xl flex justify-end mb-4 px-4 relative">
-         <div className="bg-slate-100 p-1 rounded-xl flex relative isolate gap-1">
-            {(['lv', 'ru', 'en'] as const).map((l) => {
-               const LangIcon = TRANSLATIONS[l].flag;
-               return (
-                 <button 
-                   key={l}
-                   onClick={() => setLang(l)}
-                   className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors uppercase relative z-10 ${
-                     lang === l ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
-                   }`}
-                 >
-                   <LangIcon className="w-4 h-3 rounded-[2px] shadow-sm object-cover" />
-                   {TRANSLATIONS[l].label}
-                   {lang === l && (
-                     <motion.div 
-                       layoutId="active-lang-pill" 
-                       className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10" 
-                       transition={{ type: "spring", stiffness: 300, damping: 30 }} 
-                     />
-                   )}
-                 </button>
-               );
-            })}
-         </div>
+        <div className="bg-slate-100 p-1 rounded-xl flex relative isolate gap-1">
+          {(['lv', 'ru', 'en'] as const).map((l) => {
+            const LangIcon = TRANSLATIONS[l].flag;
+            return (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors uppercase relative z-10 ${lang === l ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
+                  }`}
+              >
+                <LangIcon className="w-4 h-3 rounded-[2px] shadow-sm object-cover" />
+                {TRANSLATIONS[l].label}
+                {lang === l && (
+                  <motion.div
+                    layoutId="active-lang-pill"
+                    className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="mb-10 text-center">
-         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-violet-800 to-indigo-900 pb-2">
-            {t.title}
-         </h1>
-         <p className="text-slate-400 font-medium">{t.subtitle}</p>
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-violet-800 to-indigo-900 pb-2">
+          {t.title}
+        </h1>
+        <p className="text-slate-400 font-medium">{t.subtitle}</p>
       </div>
 
       <div className="max-w-6xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row items-stretch min-h-[700px]">
-        
+
         {/* LEFT SIDE */}
         <div className="p-6 md:p-10 lg:w-7/12 flex flex-col border-r border-slate-100 relative">
-          
-          <div className="flex flex-col gap-6 h-full">
-             
-             {/* Switcher (Mobile Fixed) */}
-             <div className="bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl flex items-stretch relative isolate">
-                {[
-                  { id: 'gross', label: t.gross_to_net },
-                  { id: 'net', label: t.net_to_gross }
-                ].map((option) => (
-                  <button
-                    key={option.id}
-                    onClick={() => setMode(option.id)}
-                    className={`flex-1 py-2 px-2 text-[10px] sm:text-xs md:text-sm font-bold rounded-xl relative z-10 flex items-center justify-center text-center whitespace-normal leading-tight transition-colors ${
-                      mode === option.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                  >
-                    <span className="relative z-10">{option.label}</span>
-                    {mode === option.id && (
-                      <motion.div 
-                        layoutId="active-pill" 
-                        className="absolute inset-0 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] rounded-xl -z-10" 
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }} 
-                      />
-                    )}
-                  </button>
-                ))}
-             </div>
 
-             {/* Input (Updated Logic) */}
-             <div className="relative group">
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">{getInputLabel()}</label>
-                  
-                  <div className="bg-slate-100 p-1 rounded-xl flex relative isolate">
-                    {[
-                      { id: 'monthly', label: t.monthly },
-                      { id: 'yearly', label: t.yearly }
-                    ].map((opt) => (
-                      <button
-                        key={opt.id}
-                        onClick={() => setPeriod(opt.id as any)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 ${
-                          period === opt.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
+          <div className="flex flex-col gap-6 h-full">
+
+            {/* Switcher (Mobile Fixed) */}
+            <div className="bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl flex items-stretch relative isolate">
+              {[
+                { id: 'gross', label: t.gross_to_net },
+                { id: 'net', label: t.net_to_gross }
+              ].map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => setMode(option.id)}
+                  className={`flex-1 py-2 px-2 text-[10px] sm:text-xs md:text-sm font-bold rounded-xl relative z-10 flex items-center justify-center text-center whitespace-normal leading-tight transition-colors ${mode === option.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                  <span className="relative z-10">{option.label}</span>
+                  {mode === option.id && (
+                    <motion.div
+                      layoutId="active-pill"
+                      className="absolute inset-0 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] rounded-xl -z-10"
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Input (Updated Logic) */}
+            <div className="relative group">
+              <div className="flex justify-between items-center mb-3">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">{getInputLabel()}</label>
+
+                <div className="bg-slate-100 p-1 rounded-xl flex relative isolate">
+                  {[
+                    { id: 'monthly', label: t.monthly },
+                    { id: 'yearly', label: t.yearly }
+                  ].map((opt) => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setPeriod(opt.id as any)}
+                      className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 ${period === opt.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
                         }`}
-                      >
-                        {opt.label}
-                        {period === opt.id && (
-                          <motion.div
-                            layoutId="period-pill"
-                            className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10"
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                          />
-                        )}
+                    >
+                      {opt.label}
+                      {period === opt.id && (
+                        <motion.div
+                          layoutId="period-pill"
+                          className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10"
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center relative">
+                <span className="absolute left-6 text-3xl text-slate-400 group-focus-within:text-indigo-500 transition-colors">€</span>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => { const val = e.target.value; setAmount(val === '' ? '' : Number(val)); }}
+                  onBlur={() => { if (amount === '') setAmount(0); }}
+                  className="w-full pl-14 pr-4 py-5 text-4xl md:text-5xl font-bold text-slate-800 bg-slate-50 rounded-3xl border-2 border-transparent focus:border-indigo-500 focus:bg-white transition-all outline-none"
+                />
+              </div>
+              {getMinWageError()}
+            </div>
+
+            {/* Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 flex flex-col justify-between">
+                <label className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                  <Users size={18} className="text-indigo-500" />
+                  {t.dependents}
+                </label>
+                <div className="flex items-center justify-between bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200">
+                  <button onClick={() => setDependents(Math.max(0, dependents - 1))} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 active:scale-95 transition-transform"><Minus size={20} /></button>
+                  <span className="text-2xl font-bold text-slate-800 w-8 text-center">{dependents}</span>
+                  <button onClick={() => setDependents(dependents + 1)} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-indigo-600 active:scale-95 transition-transform"><Plus size={20} /></button>
+                </div>
+              </div>
+
+              <motion.div onClick={() => setTaxBookSubmitted(!taxBookSubmitted)} whileTap={{ scale: 0.98 }} className={`group cursor-pointer rounded-3xl border p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${taxBookSubmitted ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-slate-200'}`}>
+                <div className="flex justify-between items-start z-10 h-full">
+                  <div className="flex flex-col justify-between h-full">
+                    <span className={`text-sm font-bold flex items-center gap-2 ${taxBookSubmitted ? 'text-indigo-900' : 'text-slate-700'}`}>
+                      <BookCheck size={18} className={taxBookSubmitted ? 'text-indigo-600' : 'text-slate-400'} />
+                      {t.tax_book}
+                    </span>
+                    <span className={`text-xs mt-1 ${taxBookSubmitted ? 'text-indigo-600' : 'text-slate-500'}`}>{taxBookSubmitted ? t.submitted : t.not_submitted}</span>
+                  </div>
+                  <div className={`w-12 h-7 rounded-full p-1 transition-colors ${taxBookSubmitted ? 'bg-indigo-600' : 'bg-slate-200'}`}><motion.div layout className={`w-5 h-5 bg-white rounded-full shadow-sm ${taxBookSubmitted ? 'ml-auto' : ''}`} /></div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Secondary (Grouped in Card) */}
+            <div className="mt-4">
+              <div className="bg-slate-50 p-5 rounded-3xl border border-slate-200/60 space-y-4">
+
+                {/* Pension (Fixed Layout: Centered & Wrapped) */}
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Armchair size={16} />
+                    {t.pension}
+                  </label>
+                  <div className="bg-slate-100 p-1 rounded-2xl flex relative isolate items-stretch">
+                    {[
+                      { id: 'none', label: t.none },
+                      { id: 'service', label: t.service },
+                      { id: 'old_age', label: t.old_age }
+                    ].map((opt) => (
+                      <button key={opt.id} onClick={() => setPensionType(opt.id as any)} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
+                        <span>{opt.label}</span>
+                        {pensionType === opt.id && <motion.div layoutId="pension-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                       </button>
                     ))}
                   </div>
                 </div>
-                
-                <div className="flex items-center relative">
-                  <span className="absolute left-6 text-3xl text-slate-400 group-focus-within:text-indigo-500 transition-colors">€</span>
-                  <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => { const val = e.target.value; setAmount(val === '' ? '' : Number(val)); }}
-                    onBlur={() => { if (amount === '') setAmount(0); }}
-                    className="w-full pl-14 pr-4 py-5 text-4xl md:text-5xl font-bold text-slate-800 bg-slate-50 rounded-3xl border-2 border-transparent focus:border-indigo-500 focus:bg-white transition-all outline-none"
-                  />
-                </div>
-                {getMinWageError()}
-             </div>
 
-             {/* Grid */}
-             <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 flex flex-col justify-between">
-                   <label className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
-                      <Users size={18} className="text-indigo-500" />
-                      {t.dependents}
-                   </label>
-                   <div className="flex items-center justify-between bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200">
-                      <button onClick={() => setDependents(Math.max(0, dependents - 1))} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 active:scale-95 transition-transform"><Minus size={20} /></button>
-                      <span className="text-2xl font-bold text-slate-800 w-8 text-center">{dependents}</span>
-                      <button onClick={() => setDependents(dependents + 1)} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-indigo-600 active:scale-95 transition-transform"><Plus size={20} /></button>
-                   </div>
-                </div>
-
-                <motion.div onClick={() => setTaxBookSubmitted(!taxBookSubmitted)} whileTap={{ scale: 0.98 }} className={`group cursor-pointer rounded-3xl border p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${taxBookSubmitted ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-slate-200'}`}>
-                  <div className="flex justify-between items-start z-10 h-full">
-                     <div className="flex flex-col justify-between h-full">
-                        <span className={`text-sm font-bold flex items-center gap-2 ${taxBookSubmitted ? 'text-indigo-900' : 'text-slate-700'}`}>
-                           <BookCheck size={18} className={taxBookSubmitted ? 'text-indigo-600' : 'text-slate-400'} />
-                           {t.tax_book}
-                        </span>
-                        <span className={`text-xs mt-1 ${taxBookSubmitted ? 'text-indigo-600' : 'text-slate-500'}`}>{taxBookSubmitted ? t.submitted : t.not_submitted}</span>
-                     </div>
-                     <div className={`w-12 h-7 rounded-full p-1 transition-colors ${taxBookSubmitted ? 'bg-indigo-600' : 'bg-slate-200'}`}><motion.div layout className={`w-5 h-5 bg-white rounded-full shadow-sm ${taxBookSubmitted ? 'ml-auto' : ''}`} /></div>
-                  </div>
-                </motion.div>
-             </div>
-
-             {/* Secondary (Grouped in Card) */}
-             <div className="mt-4">
-               <div className="bg-slate-50 p-5 rounded-3xl border border-slate-200/60 space-y-4">
-                 
-                 {/* Pension (Fixed Layout: Centered & Wrapped) */}
-                 <div>
-                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <Armchair size={16} />
-                      {t.pension}
-                   </label>
-                   <div className="bg-slate-100 p-1 rounded-2xl flex relative isolate items-stretch">
+                {/* Row for Disability & Status */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex flex-col h-full">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Accessibility size={16} />
+                      {t.disability}
+                    </label>
+                    <div className="bg-slate-100 p-1 rounded-2xl flex-1 flex items-stretch relative isolate h-full">
                       {[
-                        { id: 'none', label: t.none }, 
-                        { id: 'service', label: t.service }, 
-                        { id: 'old_age', label: t.old_age }
-                      ].map((opt) => (
-                        <button key={opt.id} onClick={() => setPensionType(opt.id as any)} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
-                          <span>{opt.label}</span>
-                          {pensionType === opt.id && <motion.div layoutId="pension-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
+                        { id: 'none', label: t.none },
+                        { id: '1', label: t.group_1 },
+                        { id: '2', label: t.group_2 },
+                        { id: '3', label: t.group_3 }
+                      ].map((grp) => (
+                        <button key={grp.id} onClick={() => setDisabilityGroup(grp.id as any)} className={`flex-1 flex items-center justify-center py-2 text-[10px] font-bold rounded-xl transition-all relative z-10 ${disabilityGroup === grp.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
+                          {grp.label}
+                          {disabilityGroup === grp.id && <motion.div layoutId="disability-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                         </button>
                       ))}
-                   </div>
-                 </div>
-
-                 {/* Row for Disability & Status */}
-                 <div className="grid md:grid-cols-2 gap-4">
-                    <div className="flex flex-col h-full">
-                       <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                          <Accessibility size={16} />
-                          {t.disability}
-                       </label>
-                       <div className="bg-slate-100 p-1 rounded-2xl flex-1 flex items-stretch relative isolate h-full">
-                         {[
-                           {id: 'none', label: t.none}, 
-                           {id: '1', label: t.group_1}, 
-                           {id: '2', label: t.group_2}, 
-                           {id: '3', label: t.group_3}
-                         ].map((grp) => (
-                           <button key={grp.id} onClick={() => setDisabilityGroup(grp.id as any)} className={`flex-1 flex items-center justify-center py-2 text-[10px] font-bold rounded-xl transition-all relative z-10 ${disabilityGroup === grp.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
-                             {grp.label}
-                             {disabilityGroup === grp.id && <motion.div layoutId="disability-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
-                           </button>
-                         ))}
-                       </div>
                     </div>
+                  </div>
 
-                    <div className="flex flex-col h-full">
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                         <Landmark size={16} />
-                         {t.status}
-                      </label>
-                      <motion.div 
-                        onClick={() => setIsRepressed(!isRepressed)} 
-                        whileTap={{ scale: 0.98 }} 
-                        className={`group cursor-pointer rounded-2xl border p-3 flex-1 flex items-center justify-between transition-all duration-200 min-h-[44px] h-full ${isRepressed ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200 hover:border-slate-300'} relative`}
-                      >
-                         <div className="flex items-center gap-1.5 flex-1 pr-2">
-                            <span className={`text-[10px] font-bold leading-tight whitespace-normal ${isRepressed ? 'text-indigo-900' : 'text-slate-500'}`}>
-                              {t.status_label}
-                            </span>
-                            <button 
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setShowRepressedTooltip(!showRepressedTooltip); }}
-                              onMouseEnter={() => setShowRepressedTooltip(true)}
-                              onMouseLeave={() => setShowRepressedTooltip(false)}
-                              className="text-slate-400 hover:text-indigo-500 transition-colors p-0.5 rounded-full hover:bg-slate-100 flex-shrink-0"
+                  <div className="flex flex-col h-full">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Landmark size={16} />
+                      {t.status}
+                    </label>
+                    <motion.div
+                      onClick={() => setIsRepressed(!isRepressed)}
+                      whileTap={{ scale: 0.98 }}
+                      className={`group cursor-pointer rounded-2xl border p-3 flex-1 flex items-center justify-between transition-all duration-200 min-h-[44px] h-full ${isRepressed ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200 hover:border-slate-300'} relative`}
+                    >
+                      <div className="flex items-center gap-1.5 flex-1 pr-2">
+                        <span className={`text-[10px] font-bold leading-tight whitespace-normal ${isRepressed ? 'text-indigo-900' : 'text-slate-500'}`}>
+                          {t.status_label}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setShowRepressedTooltip(!showRepressedTooltip); }}
+                          onMouseEnter={() => setShowRepressedTooltip(true)}
+                          onMouseLeave={() => setShowRepressedTooltip(false)}
+                          className="text-slate-400 hover:text-indigo-500 transition-colors p-0.5 rounded-full hover:bg-slate-100 flex-shrink-0"
+                        >
+                          <Info size={14} />
+                        </button>
+                        <AnimatePresence>
+                          {showRepressedTooltip && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                              transition={{ duration: 0.2 }}
+                              className="absolute bottom-[calc(100%+12px)] left-0 w-[280px] sm:w-96 p-4 bg-white shadow-2xl rounded-2xl border border-slate-100 text-left z-50 overflow-hidden"
                             >
-                              <Info size={14} />
-                            </button>
-                            <AnimatePresence>
-                              {showRepressedTooltip && (
-                                <motion.div 
-                                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                  transition={{ duration: 0.2 }}
-                                  className="absolute bottom-[calc(100%+12px)] left-0 w-[280px] sm:w-96 p-4 bg-white shadow-2xl rounded-2xl border border-slate-100 text-left z-50 overflow-hidden"
-                                >
-                                  <div className="max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
-                                    <div className="mb-3">
-                                      <h4 className="text-[11px] font-bold text-indigo-900 mb-1 leading-tight">{t.tooltip.title1}</h4>
-                                      <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{t.tooltip.desc1}</p>
-                                      <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3 marker:text-indigo-400">
-                                        {t.tooltip.list1.map((item, i) => <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>)}
-                                      </ul>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-[11px] font-bold text-indigo-900 mb-1 leading-tight">{t.tooltip.title2}</h4>
-                                      <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{t.tooltip.desc2}</p>
-                                      <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3 marker:text-indigo-400">
-                                        {t.tooltip.list2.map((item, i) => <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>)}
-                                      </ul>
-                                    </div>
-                                  </div>
-                                  <div className="absolute -bottom-1.5 left-6 w-3 h-3 bg-white border-b border-r border-slate-100 transform rotate-45"></div>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                         </div>
-                         <div className={`w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ${isRepressed ? 'bg-indigo-600' : 'bg-slate-200'}`}><motion.div layout className={`w-4 h-4 bg-white rounded-full shadow-sm ${isRepressed ? 'ml-auto' : ''}`} /></div>
-                      </motion.div>
-                    </div>
-                 </div>
-               </div>
-             </div>
+                              <div className="max-h-[400px] overflow-y-auto custom-scrollbar pr-1">
+                                <div className="mb-3">
+                                  <h4 className="text-[11px] font-bold text-indigo-900 mb-1 leading-tight">{t.tooltip.title1}</h4>
+                                  <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{t.tooltip.desc1}</p>
+                                  <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3 marker:text-indigo-400">
+                                    {t.tooltip.list1.map((item, i) => <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>)}
+                                  </ul>
+                                </div>
+                                <div>
+                                  <h4 className="text-[11px] font-bold text-indigo-900 mb-1 leading-tight">{t.tooltip.title2}</h4>
+                                  <p className="text-[10px] text-slate-500 leading-relaxed mb-1.5">{t.tooltip.desc2}</p>
+                                  <ul className="text-[10px] text-slate-600 space-y-1 list-disc pl-3 marker:text-indigo-400">
+                                    {t.tooltip.list2.map((item, i) => <li key={i}><span className="font-semibold text-slate-700">{item.b}</span> {item.t}</li>)}
+                                  </ul>
+                                </div>
+                              </div>
+                              <div className="absolute -bottom-1.5 left-6 w-3 h-3 bg-white border-b border-r border-slate-100 transform rotate-45"></div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                      <div className={`w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ${isRepressed ? 'bg-indigo-600' : 'bg-slate-200'}`}><motion.div layout className={`w-4 h-4 bg-white rounded-full shadow-sm ${isRepressed ? 'ml-auto' : ''}`} /></div>
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-             {/* Footer */}
-             <div className="pt-4 border-t border-slate-100 mt-auto">
-               <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} /> {t.summary.calc_prefix}</span>
-                  <div className="bg-slate-100 p-1 rounded-xl flex">
-                    {[2025, 2026].map((y) => (
-                      <button key={y} onClick={() => setYear(y)} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 flex items-center gap-1.5 ${year === y ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'}`}>
-                         {y} {year === y && <motion.div layoutId="active-year-pill-bottom" className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10" transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
-                      </button>
-                    ))}
-                  </div>
-               </div>
-               <div className="flex gap-4 items-start p-5 rounded-3xl bg-slate-50/80 border border-slate-100 text-xs text-slate-600">
-                  <Info className="w-5 h-5 shrink-0 mt-0.5 text-indigo-400" />
-                  <div>
-                     <p className="font-bold text-slate-800 mb-1">{year}. {lang === 'lv' ? 'gada' : ''} {t.tax_env}:</p>
-                     <ul className="space-y-1.5 pl-1">
-                       {year === 2026 ? (
-                         <>
-                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                             <span className="flex items-center gap-2">
-                               <ArrowUpRight size={14} className="text-emerald-500" />
-                               {t.min_wage_info}:
-                             </span>
-                             <strong className="pl-6 sm:pl-0">€780 <span className="font-normal text-slate-500">(+40€)</span></strong>
-                           </li>
-                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                             <span className="flex items-center gap-2">
-                               <ArrowUpRight size={14} className="text-emerald-500" />
-                               {t.non_taxable}:
-                             </span>
-                             <strong className="pl-6 sm:pl-0">€550 <span className="font-normal text-slate-500">(+40€)</span></strong>
-                           </li>
-                         </>
-                       ) : (
-                         <>
-                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                             <span className="flex items-center gap-2">
-                               <ArrowUpRight size={14} className="text-emerald-500" />
-                               {t.min_wage_info}:
-                             </span>
-                             <strong className="pl-6 sm:pl-0">€740 <span className="font-normal text-slate-500">(+40€)</span></strong>
-                           </li>
-                           <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                             <span className="flex items-center gap-2">
-                               <CheckCircle2 size={14} className="text-emerald-500" />
-                               {t.non_taxable}:
-                             </span>
-                             <strong className="pl-6 sm:pl-0">€510 <span className="font-normal text-slate-500">({t.fixed})</span></strong>
-                           </li>
-                         </>
-                       )}
-                     </ul>
-                  </div>
-               </div>
-             </div>
+            {/* Footer */}
+            <div className="pt-4 border-t border-slate-100 mt-auto">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} /> {t.summary.calc_prefix}</span>
+                <div className="bg-slate-100 p-1 rounded-xl flex">
+                  {[2025, 2026].map((y) => (
+                    <button key={y} onClick={() => setYear(y)} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 flex items-center gap-1.5 ${year === y ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'}`}>
+                      {y} {year === y && <motion.div layoutId="active-year-pill-bottom" className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10" transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-4 items-start p-5 rounded-3xl bg-slate-50/80 border border-slate-100 text-xs text-slate-600">
+                <Info className="w-5 h-5 shrink-0 mt-0.5 text-indigo-400" />
+                <div>
+                  <p className="font-bold text-slate-800 mb-1">{year}. {lang === 'lv' ? 'gada' : ''} {t.tax_env}:</p>
+                  <ul className="space-y-1.5 pl-1">
+                    {year === 2026 ? (
+                      <>
+                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                          <span className="flex items-center gap-2">
+                            <ArrowUpRight size={14} className="text-emerald-500" />
+                            {t.min_wage_info}:
+                          </span>
+                          <strong className="pl-6 sm:pl-0">€780 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                        </li>
+                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                          <span className="flex items-center gap-2">
+                            <ArrowUpRight size={14} className="text-emerald-500" />
+                            {t.non_taxable}:
+                          </span>
+                          <strong className="pl-6 sm:pl-0">€550 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                        </li>
+                      </>
+                    ) : (
+                      <>
+                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                          <span className="flex items-center gap-2">
+                            <ArrowUpRight size={14} className="text-emerald-500" />
+                            {t.min_wage_info}:
+                          </span>
+                          <strong className="pl-6 sm:pl-0">€740 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                        </li>
+                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                          <span className="flex items-center gap-2">
+                            <CheckCircle2 size={14} className="text-emerald-500" />
+                            {t.non_taxable}:
+                          </span>
+                          <strong className="pl-6 sm:pl-0">€510 <span className="font-normal text-slate-500">({t.fixed})</span></strong>
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* RIGHT SIDE (NEW DARK HERO DESIGN) */}
         <div className="p-6 md:p-10 lg:w-5/12 bg-slate-50 flex flex-col justify-between border-l border-slate-100">
           <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-6">
-            
+
             {/* TOP HERO CARD: Result & Summary - DARK & BOLD (Colors Swapped) */}
             <div className="bg-slate-900 rounded-[2rem] shadow-xl p-8 flex flex-col justify-start relative overflow-hidden">
               <div className="mb-6 relative z-10">
-                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                    {t.results_title} ({year})
-                 </h3>
-                 {rules && (
-                   <p className="text-[10px] leading-relaxed text-slate-400 font-sans border-l-2 border-indigo-500/50 pl-3">
-                      {generateSummary()}
-                   </p>
-                 )}
+                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                  {t.results_title} ({year})
+                </h3>
+                {rules && (
+                  <p className="text-[10px] leading-relaxed text-slate-400 font-sans border-l-2 border-indigo-500/50 pl-3">
+                    {generateSummary()}
+                  </p>
+                )}
               </div>
 
               {/* Dynamic Big Result with "Badge" style */}
               <div className="relative z-10">
                 <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700/50 flex flex-col items-start gap-1 shadow-inner">
-                   <span className="text-xs font-bold text-white uppercase tracking-wider opacity-90">{mainResultLabel}</span>
-                   <div className="text-4xl sm:text-5xl font-extrabold text-emerald-400 tracking-tight leading-none break-all sm:break-normal">
-                      <AnimatedCounter value={displayVal(mainResultValue)}/>
-                   </div>
+                  <span className="text-xs font-bold text-white uppercase tracking-wider opacity-90">{mainResultLabel}</span>
+                  <div className="text-4xl sm:text-5xl font-extrabold text-emerald-400 tracking-tight leading-none break-all sm:break-normal">
+                    <AnimatedCounter value={displayVal(mainResultValue)} />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* TABLE BLOCK: Taxes & Employer Costs */}
             <div className="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-               {/* Employee Taxes */}
-               <div className="divide-y divide-slate-100">
-                  <div className="p-6">
+              {/* Employee Taxes */}
+              <div className="divide-y divide-slate-100">
+                <div className="p-6">
+                  <TableRows>
+                    <TableRow label={vsaoiLabel} value={displayVal(results.vsaoiEmployee)} />
+                    <TableRow label={iinLabel} value={displayVal(results.iin)} />
+                  </TableRows>
+                </div>
+
+                {/* Reliefs Section (Distinct "Badge" Style) */}
+                <div className="bg-slate-50/80 p-4 border-t border-b border-slate-100">
+                  <div className="border border-dashed border-slate-300 rounded-xl p-4 bg-white/50">
+                    <div className="flex items-center gap-2 mb-3 text-slate-400">
+                      <TrendingDown size={14} />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{t.reliefs_title}</span>
+                    </div>
                     <TableRows>
-                      <TableRow label={vsaoiLabel} value={displayVal(results.vsaoiEmployee)} />
-                      <TableRow label={iinLabel} value={displayVal(results.iin)} />
+                      {results.nonTaxableMinApplied > 0 && <TableRow label={t.relief_min} value={displayVal(results.nonTaxableMinApplied)} isNeutral size="sm" />}
+                      {results.reliefDependents > 0 && <TableRow label={t.relief_dep} value={displayVal(results.reliefDependents)} isNeutral size="sm" />}
+                      {results.reliefDisability > 0 && <TableRow label={t.relief_dis} value={displayVal(results.reliefDisability)} isNeutral size="sm" />}
+                      {results.reliefRepressed > 0 && <TableRow label={t.relief_rep} value={displayVal(results.reliefRepressed)} isNeutral size="sm" />}
+                      {results.nonTaxableMinApplied === 0 && results.totalReliefsApplied === 0 && <span className="text-[10px] text-slate-400 italic pl-1">{t.no_reliefs}</span>}
                     </TableRows>
                   </div>
+                </div>
 
-                  {/* Reliefs Section (Distinct "Badge" Style) */}
-                  <div className="bg-slate-50/80 p-4 border-t border-b border-slate-100">
-                    <div className="border border-dashed border-slate-300 rounded-xl p-4 bg-white/50">
-                        <div className="flex items-center gap-2 mb-3 text-slate-400">
-                            <TrendingDown size={14} />
-                            <span className="text-[10px] font-bold uppercase tracking-wider">{t.reliefs_title}</span>
-                        </div>
-                        <TableRows>
-                           {results.nonTaxableMinApplied > 0 && <TableRow label={t.relief_min} value={displayVal(results.nonTaxableMinApplied)} isNeutral size="sm" />}
-                           {results.reliefDependents > 0 && <TableRow label={t.relief_dep} value={displayVal(results.reliefDependents)} isNeutral size="sm" />}
-                           {results.reliefDisability > 0 && <TableRow label={t.relief_dis} value={displayVal(results.reliefDisability)} isNeutral size="sm" />}
-                           {results.reliefRepressed > 0 && <TableRow label={t.relief_rep} value={displayVal(results.reliefRepressed)} isNeutral size="sm" />}
-                           {results.nonTaxableMinApplied === 0 && results.totalReliefsApplied === 0 && <span className="text-[10px] text-slate-400 italic pl-1">{t.no_reliefs}</span>}
-                        </TableRows>
+                {/* Employer Costs */}
+                <div className="p-6">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">{t.employer_costs}</h3>
+                  <TableRows>
+                    <TableRow label={employerVsaoiLabel} value={displayVal(results.employerVsaoi)} isNeutral />
+                    <TableRow label={t.risk_duty} value={displayVal(results.riskDuty)} isNeutral />
+                    <div className="pt-3 border-t border-slate-100 mt-2">
+                      <TableRow label={t.total_cost} value={displayVal(results.totalEmployerCost)} isBold />
                     </div>
-                  </div>
-
-                  {/* Employer Costs */}
-                  <div className="p-6">
-                     <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">{t.employer_costs}</h3>
-                     <TableRows>
-                       <TableRow label={employerVsaoiLabel} value={displayVal(results.employerVsaoi)} isNeutral />
-                       <TableRow label={t.risk_duty} value={displayVal(results.riskDuty)} isNeutral />
-                       <div className="pt-3 border-t border-slate-100 mt-2">
-                         <TableRow label={t.total_cost} value={displayVal(results.totalEmployerCost)} isBold />
-                       </div>
-                     </TableRows>
-                  </div>
-               </div>
+                  </TableRows>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1038,7 +1035,7 @@ const TableRow = ({ label, value, isNeutral = false, isBold = false, size = 'md'
   const textColor = isNeutral ? 'text-slate-500' : 'text-slate-700';
   const valueColor = isNeutral ? 'text-slate-500' : isBold ? 'text-slate-900' : 'text-slate-700';
   const weight = isBold ? 'font-bold' : 'font-medium';
-  
+
   return (
     <div className={`flex justify-between items-start gap-3 ${textSize}`}>
       <span className={`${textColor} leading-tight`}>{label}</span>
