@@ -402,7 +402,7 @@ const getInitialState = () => {
   const params = new URLSearchParams(window.location.search);
   
   return {
-    lang: (params.get('lang') === 'ru' || params.get('lang') === 'en' ? params.get('lang') : 'lv') as 'lv' | 'ru' | 'en',
+    lang: (params.get('lang') === 'ru' || params.get('lang') === 'lv' ? params.get('lang') : 'en') as 'lv' | 'ru' | 'en',
     year: params.get('year') ? Number(params.get('year')) : 2026,
     mode: params.get('mode') === 'net' ? 'net' : 'gross',
     period: params.get('period') === 'yearly' ? 'yearly' : 'monthly' as 'monthly' | 'yearly',
