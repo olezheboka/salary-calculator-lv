@@ -97,7 +97,9 @@ const TRANSLATIONS = {
       pension_old: "vecuma pensionārs",
       pension_service: "izdienas pensionārs",
       disability: "grupas invalīds",
-      repressed: "represēta persona"
+      repressed: "represēta persona",
+      warning_title: "Solidaritātes nodoklis",
+      warning_text: "Gada ienākumiem virs 200 000 € tiek piemērota papildu 3% likme (Solidaritātes nodokļa daļa). Šajā kalkulatorā tā netiek automātiski atskaitīta."
     },
     tooltip: {
       title1: "1. Politiski represēta persona (Cietušais)",
@@ -185,7 +187,9 @@ const TRANSLATIONS = {
       pension_old: "old-age pensioner",
       pension_service: "service pensioner",
       disability: "group disability",
-      repressed: "repressed person"
+      repressed: "repressed person",
+      warning_title: "Solidarity Tax",
+      warning_text: "Annual income over €200,000 is subject to an additional 3% rate (Solidarity Tax portion). This calculator does not automatically deduct it."
     },
     tooltip: {
       title1: "1. Politically Repressed Person (Victim)",
@@ -273,7 +277,9 @@ const TRANSLATIONS = {
       pension_old: "пенсионер по возрасту",
       pension_service: "пенсионер по выслуге",
       disability: "группа инвалидности",
-      repressed: "репрессированное лицо"
+      repressed: "reпрессированное лицо",
+      warning_title: "Налог солидарности",
+      warning_text: "К годовому доходу свыше 200 000 € применяется дополнительная ставка 3% (часть налога солидарности). В этом калькуляторе она не вычитается автоматически."
     },
     tooltip: {
       title1: "1. Политически репрессированное лицо (Жертва)",
@@ -322,6 +328,7 @@ type TaxRules = {
   disabilityRelief12: number;
   disabilityRelief3: number;
   repressedRelief: number;
+
   specialNonTaxable: number;
 };
 
@@ -373,6 +380,7 @@ const TAX_CONFIG: Record<number, TaxRules> = {
     disabilityRelief12: 154,
     disabilityRelief3: 120,
     repressedRelief: 154,
+
     specialNonTaxable: 500
   },
   2026: {
@@ -540,6 +548,7 @@ const SalaryCalculator = () => {
 
       // 4. IIN
       let iin = 0;
+
       if (taxBase > rules.iinThreshold) {
         const highPart = round(taxBase - rules.iinThreshold);
         const lowPart = rules.iinThreshold;
@@ -620,9 +629,11 @@ const SalaryCalculator = () => {
     return period === 'yearly' ? val * 12 : val;
   };
 
-  const iinLabel = results.taxBase > rules.iinThreshold
-    ? `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}% / ${(rules.iinRateHigh * 100).toFixed(0)}%)`
-    : `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}%)`;
+  let iinLabel = `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}%)`;
+
+  if (results.taxBase > rules.iinThreshold) {
+    iinLabel = `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}% / ${(rules.iinRateHigh * 100).toFixed(0)}%)`;
+  }
 
   const vsaoiLabel = `${t.social_tax} (${((results.rateEmp || rules.vsaoiEmployee) * 100).toFixed(2)}%)`;
   const employerVsaoiLabel = `${t.social_tax} (${((results.rateEmployer || rules.vsaoiEmployer) * 100).toFixed(2)}%)`;
@@ -775,6 +786,8 @@ const SalaryCalculator = () => {
               </div>
               {getMinWageError()}
             </div>
+
+
 
             {/* Grid */}
             <div className="grid md:grid-cols-2 gap-6">
@@ -1038,11 +1051,22 @@ const SalaryCalculator = () => {
                 </div>
               </div>
             </div>
+
+            {/* Warning Card for High Income (Moved Here) */}
+            {(results.gross * (period === 'monthly' ? 12 : 1)) > 200000 && (
+              <div className="bg-amber-50 border border-amber-200 rounded-[2rem] p-6 flex gap-4 text-amber-900 mt-auto">
+                <Info className="shrink-0 text-amber-600 mt-0.5" size={20} />
+                <div>
+                  <h3 className="font-bold text-sm mb-1.5">{t.summary.warning_title}</h3>
+                  <p className="text-xs leading-relaxed opacity-90">{t.summary.warning_text}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
       <Analytics />
-    </div>
+    </div >
   );
 };
 
