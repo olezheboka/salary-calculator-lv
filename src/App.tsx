@@ -778,6 +778,8 @@ const SalaryCalculator = () => {
                 <span className="absolute left-6 text-3xl text-slate-400 group-focus-within:text-indigo-500 transition-colors">€</span>
                 <input
                   type="number"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={amount}
                   onChange={(e) => { const val = e.target.value; setAmount(val === '' ? '' : Number(val)); }}
                   onBlur={() => { if (amount === '') setAmount(0); }}
