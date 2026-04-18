@@ -1,628 +1,105 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Plus, Minus, Calendar, TrendingDown, Info, ArrowUpRight, CheckCircle2,
-  Users, BookCheck, Landmark, Accessibility, Armchair
+  Accessibility,
+  Armchair,
+  ArrowUpRight,
+  BookCheck,
+  Calendar,
+  CheckCircle2,
+  Info,
+  Landmark,
+  Minus,
+  Plus,
+  TrendingDown,
+  Users,
 } from 'lucide-react';
-import { motion, useTransform, animate, useMotionValue, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
-// --- FLAG ICONS ---
-
-const FlagLV = ({ className = "" }: { className?: string }) => (
-  <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="32" height="24" fill="#9E3039" />
-    <rect y="9.6" width="32" height="4.8" fill="#FFF" />
-  </svg>
-);
-
-const FlagRU = ({ className = "" }: { className?: string }) => (
-  <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="32" height="24" fill="#FFF" />
-    <rect y="8" width="32" height="8" fill="#0039A6" />
-    <rect y="16" width="32" height="8" fill="#D52B1E" />
-  </svg>
-);
-
-const FlagEN = ({ className = "" }: { className?: string }) => (
-  <svg viewBox="0 0 32 24" className={className} xmlns="http://www.w3.org/2000/svg">
-    <rect width="32" height="24" fill="#012169" />
-    <path d="M0 0 L32 24 M32 0 L0 24" stroke="#FFF" strokeWidth="3" />
-    <path d="M0 0 L32 24 M32 0 L0 24" stroke="#C8102E" strokeWidth="1.5" />
-    <path d="M16 0 V24 M0 12 H32" stroke="#FFF" strokeWidth="5" />
-    <path d="M16 0 V24 M0 12 H32" stroke="#C8102E" strokeWidth="3" />
-  </svg>
-);
-
-// --- TRANSLATIONS ---
-const TRANSLATIONS = {
-  lv: {
-    flag: FlagLV,
-    label: "LV",
-    title: "Algas kalkulators",
-    subtitle: "Algas aprēķins Latvijā",
-    gross: "Bruto",
-    net: "Neto",
-    gross_full: "Bruto (Uz papīra)",
-    net_full: "Neto (Uz rokas)",
-    gross_to_net: "Bruto → Neto (uz rokas)",
-    net_to_gross: "Neto → Bruto (uz papīra)",
-    monthly: "Mēnesī",
-    yearly: "Gadā",
-    salary_monthly: "Alga mēnesī",
-    salary_yearly: "Alga gadā",
-
-    // Dynamic labels
-    gross_salary_monthly: "Bruto alga mēnesī",
-    net_salary_monthly: "Neto alga mēnesī",
-    gross_salary_yearly: "Bruto alga gadā",
-    net_salary_yearly: "Neto alga gadā",
-
-    dependents: "Apgādājamie",
-    tax_book: "Nodokļu grāmatiņa",
-    submitted: "Iesniegta pie darba devēja",
-    not_submitted: "Nav iesniegta pie darba devēja",
-
-    pension: "Pensija",
-    disability: "Invaliditāte",
-    status: "Statuss",
-    status_label: "Politiski represēta vai NPK persona",
-
-    // Pension types
-    none: "Nav",
-    service: "Izdienas vai speciālā",
-    old_age: "Vecuma",
-
-    group_1: "1. gr",
-    group_2: "2. gr",
-    group_3: "3. gr",
-    results_title: "Rezultāts",
-    gross_salary: "Bruto alga (uz papīra)",
-    social_tax: "Sociālais nodoklis",
-    income_tax: "Iedzīvotāju ienākuma nodoklis",
-    reliefs_title: "Piemērotie atvieglojumi",
-    min_wage_error: "Minimālā alga",
-    employer_costs: "Darba devēja izmaksas",
-    risk_duty: "Riska nodeva",
-    total_cost: "Kopējās darba devēja izmaksas",
-    final_net: "Neto alga (uz rokas)",
-    summary: {
-      calc_prefix: "Aprēķins veikts",
-      period_month: "mēneša",
-      period_year: "gada",
-      salary: "algai",
-      book_yes: "Nodokļu grāmatiņa ir iesniegta pie darba devēja.",
-      book_no: "Nodokļu grāmatiņa nav iesniegta pie darba devēja.",
-      dep_prefix: "Reģistrēti apgādājamie:",
-      status_prefix: "Piemērots statuss:",
-      pension_old: "vecuma pensionārs",
-      pension_service: "izdienas pensionārs",
-      disability: "grupas invalīds",
-      repressed: "represēta persona",
-      warning_title: "Solidaritātes nodoklis",
-      warning_text: "Gada ienākumiem virs 200 000 € tiek piemērota papildu 3% likme (Solidaritātes nodokļa daļa). Šajā kalkulatorā tā netiek automātiski atskaitīta."
-    },
-    tooltip: {
-      title1: "1. Politiski represēta persona (Cietušais)",
-      desc1: "Šis statuss tiek piešķirts cilvēkiem, kuri cieta no komunistiskā vai nacistiskā režīma represijām. Tā ir vislielākā grupa, kurā ietilpst:",
-      list1: [
-        { b: "Izsūtītie:", t: "Cilvēki, kuri tika deportēti (piem., 1941. vai 1949. gadā) vai nometināti speciālās nometinājuma vietās." },
-        { b: "Ieslodzītie:", t: "Personas, kas turētas cietumos, nometnēs vai geto politisku motīvu dēļ." },
-        { b: "Dzimušie izsūtījumā:", t: "Bērni, kuri piedzima vecākiem nometinājumā represiju laikā." }
-      ],
-      title2: "2. NPK persona (Cīnītājs)",
-      desc2: "Šis statuss ir piešķirts cilvēkiem, kuri aktīvi pretojās okupācijas režīmiem. Ietilpst:",
-      list2: [
-        { b: "Bruņotā pretošanās:", t: "Nacionālie partizāni (\"mežabrāļi\") un citi brīvības cīnītāji." },
-        { b: "Neapbruņotā pretošanās:", t: "Pagrīdes dalībnieki, brīvvalsts ideju izplatītāji." }
-      ]
-    },
-    tax_env: "nodokļu vide",
-    min_wage_info: "Minimālā alga",
-    non_taxable: "Neapliekamais minimums",
-    fixed: "Fiksēts",
-    relief_min: "Neapliekamais minimums",
-    relief_dep: "Par apgādājamiem",
-    relief_dis: "Par invaliditāti",
-    relief_rep: "Par represētā statusu",
-    no_reliefs: "Nav piemērotu atvieglojumu"
-  },
-  en: {
-    flag: FlagEN,
-    label: "EN",
-    title: "Salary calculator",
-    subtitle: "Salary calculation in Latvia",
-    gross: "Gross",
-    net: "Net",
-    gross_full: "Gross (On paper)",
-    net_full: "Net (In hand)",
-    gross_to_net: "Gross → Net (In hand)",
-    net_to_gross: "Net → Gross (On paper)",
-    monthly: "Monthly",
-    yearly: "Yearly",
-    salary_monthly: "Monthly Salary",
-    salary_yearly: "Yearly Salary",
-    // Dynamic labels
-    gross_salary_monthly: "Gross Salary Monthly",
-    net_salary_monthly: "Net Salary Monthly",
-    gross_salary_yearly: "Gross Salary Yearly",
-    net_salary_yearly: "Net Salary Yearly",
-
-    dependents: "Dependents",
-    tax_book: "Tax Book",
-    submitted: "Submitted to employer",
-    not_submitted: "Not submitted to employer",
-
-    pension: "Pension",
-    disability: "Disability",
-    status: "Status",
-    status_label: "Politically repressed or NRM person",
-
-    // Pension types
-    none: "None",
-    service: "Service or Special",
-    old_age: "Old Age",
-
-    group_1: "Grp 1",
-    group_2: "Grp 2",
-    group_3: "Grp 3",
-    results_title: "Results",
-    gross_salary: "Gross Salary (On paper)",
-    social_tax: "Social Security Tax",
-    income_tax: "Personal Income Tax",
-    reliefs_title: "Applied Reliefs",
-    min_wage_error: "Minimum wage",
-    employer_costs: "Employer Costs",
-    risk_duty: "Risk Duty",
-    total_cost: "Total Employer Costs",
-    final_net: "Net Salary (In hand)",
-    summary: {
-      calc_prefix: "Calculation for",
-      period_month: "monthly",
-      period_year: "yearly",
-      salary: "salary",
-      book_yes: "Tax book is submitted to employer.",
-      book_no: "Tax book is not submitted to employer.",
-      dep_prefix: "Registered dependents:",
-      status_prefix: "Applied status:",
-      pension_old: "old-age pensioner",
-      pension_service: "service pensioner",
-      disability: "group disability",
-      repressed: "repressed person",
-      warning_title: "Solidarity Tax",
-      warning_text: "Annual income over €200,000 is subject to an additional 3% rate (Solidarity Tax portion). This calculator does not automatically deduct it."
-    },
-    tooltip: {
-      title1: "1. Politically Repressed Person (Victim)",
-      desc1: "Status granted to people who suffered from communist or Nazi regime repressions. Includes:",
-      list1: [
-        { b: "Deported:", t: "People deported (e.g., in 1941 or 1949) or settled in special camps." },
-        { b: "Imprisoned:", t: "Persons held in prisons, camps, or ghettos for political or national reasons." },
-        { b: "Born in exile:", t: "Children born to parents while in settlement during repressions." }
-      ],
-      title2: "2. NRM Person (National Resistance Movement)",
-      desc2: "Status granted to people who actively resisted occupation regimes. Includes:",
-      list2: [
-        { b: "Armed resistance:", t: "National partisans ('Forest Brothers') and others fighting with arms." },
-        { b: "Unarmed resistance:", t: "Underground members, distributors of independence ideas." }
-      ]
-    },
-    tax_env: "tax environment",
-    min_wage_info: "Min wage",
-    non_taxable: "Non-taxable min",
-    fixed: "Fixed",
-    relief_min: "Non-taxable minimum",
-    relief_dep: "For dependents",
-    relief_dis: "For disability",
-    relief_rep: "For repressed status",
-    no_reliefs: "No reliefs applied"
-  },
-  ru: {
-    flag: FlagRU,
-    label: "RU",
-    title: "Калькулятор зарплаты",
-    subtitle: "Расчёт зарплаты в Латвии",
-    gross: "Брутто",
-    net: "Нетто",
-    gross_full: "Брутто (На бумаге)",
-    net_full: "Нетто (На руки)",
-    gross_to_net: "Брутто → Нетто (на руки)",
-    net_to_gross: "Нетто → Брутто (на бумаге)",
-    monthly: "В месяц",
-    yearly: "В год",
-    salary_monthly: "Зарплата в месяц",
-    salary_yearly: "Зарплата в год",
-    // Dynamic labels
-    gross_salary_monthly: "Брутто зарплата в месяц",
-    net_salary_monthly: "Нетто зарплата в месяц",
-    gross_salary_yearly: "Брутто зарплата в год",
-    net_salary_yearly: "Нетто зарплата в год",
-
-    dependents: "Иждивенцы",
-    tax_book: "Налоговая книжка",
-    submitted: "Подана работодателю",
-    not_submitted: "Не подана работодателю",
-
-    pension: "Пенсия",
-    disability: "Инвалидность",
-    status: "Статус",
-    status_label: "Политически репрессированное лицо или участник НДС",
-
-    // Pension types
-    none: "Нет",
-    service: "По выслуге лет или специальная",
-    old_age: "По возрасту",
-
-    group_1: "1 гр",
-    group_2: "2 гр",
-    group_3: "3 гр",
-    results_title: "Результат",
-    gross_salary: "Брутто зарплата (на бумаге)",
-    social_tax: "Социальный налог",
-    income_tax: "Подоходный налог",
-    reliefs_title: "Примененные льготы",
-    min_wage_error: "Минимальная зарплата",
-    employer_costs: "Расходы работодателя",
-    risk_duty: "Пошлина риска",
-    total_cost: "Общие расходы работодателя",
-    final_net: "Нетто зарплата (на руки)",
-    summary: {
-      calc_prefix: "Расчет для",
-      period_month: "месячной",
-      period_year: "годовой",
-      salary: "зарплаты",
-      book_yes: "Налоговая книжка подана работодателю.",
-      book_no: "Налоговая книжка не подана работодателю.",
-      dep_prefix: "Зарегистрировано иждивенцев:",
-      status_prefix: "Применен статус:",
-      pension_old: "пенсионер по возрасту",
-      pension_service: "пенсионер по выслуге",
-      disability: "группа инвалидности",
-      repressed: "reпрессированное лицо",
-      warning_title: "Налог солидарности",
-      warning_text: "К годовому доходу свыше 200 000 € применяется дополнительная ставка 3% (часть налога солидарности). В этом калькуляторе она не вычитается автоматически."
-    },
-    tooltip: {
-      title1: "1. Политически репрессированное лицо (Жертва)",
-      desc1: "Статус присваивается людям, пострадавшим от репрессий коммунистического или нацистского режимов. Включает:",
-      list1: [
-        { b: "Высланные:", t: "Люди, депортированные (напр. в 1941 или 1949) или поселенные в спецлагерях." },
-        { b: "Заключенные:", t: "Лица, содержавшиеся в тюрьмах, лагерях или гетто по политическим мотивам." },
-        { b: "Родившиеся в ссылке:", t: "Дети, родившиеся у родителей во время нахождения в ссылке." }
-      ],
-      title2: "2. Участник национального движения сопротивления (Борец)",
-      desc2: "Статус присваивается людям, активно сопротивлявшимся оккупационным режимам. Включает:",
-      list2: [
-        { b: "Вооруженное сопротивление:", t: "Национальные партизаны («лесные братья») и др." },
-        { b: "Невооруженное сопротивление:", t: "Подпольщики, распространители идей независимости." }
-      ]
-    },
-    tax_env: "налоговая среда",
-    min_wage_info: "Мин. зарплата",
-    non_taxable: "Необлагаемый минимум",
-    fixed: "Фикс.",
-    relief_min: "Необлагаемый минимум",
-    relief_dep: "За иждивенцев",
-    relief_dis: "За инвалидность",
-    relief_rep: "За статус репрессированного",
-    no_reliefs: "Льготы не применены"
-  }
-};
-
-// --- Types & Configuration ---
-type TaxRules = {
-  minWage: number;
-  nonTaxableMin: number;
-  vsaoiEmployee: number;
-  vsaoiEmployer: number;
-  // Pensioner Rates
-  vsaoiPensionerEmployee: number;
-  vsaoiPensionerEmployer: number;
-  vsaoiServiceEmployee: number;
-  vsaoiServiceEmployer: number;
-  // General Rates
-  iinRateLow: number;
-  iinRateHigh: number;
-  iinThreshold: number;
-  dependentRelief: number;
-  riskDuty: number;
-  disabilityRelief12: number;
-  disabilityRelief3: number;
-  repressedRelief: number;
-
-  specialNonTaxable: number;
-};
-
-type TaxCalculationResult = {
-  gross: number;
-  net: number;
-  vsaoiEmployee: number;
-  iin: number;
-  employerVsaoi: number;
-  riskDuty: number;
-  totalEmployerCost: number;
-  nonTaxableMinApplied: number;
-  reliefDependents: number;
-  reliefDisability: number;
-  reliefRepressed: number;
-  totalReliefsApplied: number;
-  taxBase: number;
-  rateEmp: number;
-  rateEmployer: number;
-};
-
-type TableRowProps = {
-  label: string;
-  value: number | undefined;
-  isNeutral?: boolean;
-  isBold?: boolean;
-  size?: 'sm' | 'md';
-};
-
-// --- TAX CONFIG ---
-const TAX_CONFIG: Record<number, TaxRules> = {
-  2025: {
-    minWage: 740,
-    nonTaxableMin: 510,
-    vsaoiEmployee: 0.105,
-    vsaoiEmployer: 0.2359,
-    // Pensioner (Old Age) Rates
-    vsaoiPensionerEmployee: 0.0925,
-    vsaoiPensionerEmployer: 0.2077,
-    // Service Pensioner Rates
-    vsaoiServiceEmployee: 0.0976,
-    vsaoiServiceEmployer: 0.2194,
-
-    iinRateLow: 0.255,
-    iinRateHigh: 0.33,
-    iinThreshold: 8775,
-    dependentRelief: 250,
-    riskDuty: 0.36,
-    disabilityRelief12: 154,
-    disabilityRelief3: 120,
-    repressedRelief: 154,
-
-    specialNonTaxable: 500
-  },
-  2026: {
-    minWage: 780,
-    nonTaxableMin: 550,
-    vsaoiEmployee: 0.105,
-    vsaoiEmployer: 0.2359,
-    // Pensioner (Old Age) Rates
-    vsaoiPensionerEmployee: 0.0925,
-    vsaoiPensionerEmployer: 0.2077,
-    // Service Pensioner Rates
-    vsaoiServiceEmployee: 0.0976,
-    vsaoiServiceEmployer: 0.2194,
-
-    iinRateLow: 0.255,
-    iinRateHigh: 0.33,
-    iinThreshold: 8775,
-    dependentRelief: 250,
-    riskDuty: 0.36,
-    disabilityRelief12: 154,
-    disabilityRelief3: 120,
-    repressedRelief: 154,
-    specialNonTaxable: 500
-  }
-};
-
-// --- Helper: ACCOUNTING ROUNDING (Arithmetic Rounding with Epsilon) ---
-const round = (num: number) => Math.round((num + Number.EPSILON) * 100) / 100;
-
-// --- Helper: Safe Animated Counter ---
-const AnimatedCounter = ({ value, className }: { value: number | undefined, className?: string }) => {
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (latest) => {
-    try {
-      return new Intl.NumberFormat('lv-LV', { style: 'currency', currency: 'EUR' }).format(latest);
-    } catch {
-      return "€0.00";
-    }
-  });
-
-  useEffect(() => {
-    const target = (typeof value === 'number' && Number.isFinite(value)) ? value : 0;
-    const controls = animate(count, target, { duration: 0.75, ease: "easeOut" });
-    return controls.stop;
-  }, [value, count]);
-
-  return <motion.span className={className}>{rounded}</motion.span>;
-};
-
-// --- Helper: URL Params Management ---
-const getInitialState = () => {
-  if (typeof window === 'undefined') return {};
-  const params = new URLSearchParams(window.location.search);
-
-  return {
-    lang: (params.get('lang') === 'ru' || params.get('lang') === 'en' ? params.get('lang') : 'lv') as 'lv' | 'ru' | 'en',
-    year: params.get('year') ? Number(params.get('year')) : 2026,
-    mode: params.get('mode') === 'net' ? 'net' : 'gross',
-    period: params.get('period') === 'yearly' ? 'yearly' : 'monthly' as 'monthly' | 'yearly',
-    amount: params.get('salary') ? Number(params.get('salary')) : 1500,
-    dependents: params.get('deps') ? Number(params.get('deps')) : 0,
-    book: params.get('book') === 'false' ? false : true,
-    pension: (['none', 'service', 'old_age'].includes(params.get('pension') || '') ? params.get('pension') : 'none') as 'none' | 'service' | 'old_age',
-    disability: (['none', '1', '2', '3'].includes(params.get('disability') || '') ? params.get('disability') : 'none') as 'none' | '1' | '2' | '3',
-    repressed: params.get('repressed') === 'true'
-  };
-};
+import { SUPPORTED_YEARS, TAX_CONFIG } from './lib/tax/config';
+import { calculateGrossFromNet, calculateTaxFromGross } from './lib/tax/calculator';
+import type { TaxCalculationResult } from './lib/tax/types';
+import {
+  DEFAULTS,
+  buildUrlSearch,
+  getInitialState,
+  type Lang,
+  type Mode,
+  type Period,
+} from './lib/url-state';
+import { TRANSLATIONS } from './i18n/translations';
+import { AnimatedCounter } from './components/AnimatedCounter';
+import { TableRow, TableRows } from './components/TableRow';
 
 const SalaryCalculator = () => {
-  // Initialize state from URL
   const initial = useMemo(() => getInitialState(), []);
 
-  const [lang, setLang] = useState<'lv' | 'ru' | 'en'>(initial.lang!);
-  const [year, setYear] = useState<number>(initial.year!);
-  const [mode, setMode] = useState(initial.mode!);
-  const [period, setPeriod] = useState<'monthly' | 'yearly'>(initial.period as 'monthly' | 'yearly');
+  const [lang, setLang] = useState<Lang>(initial.lang);
+  const [year, setYear] = useState<number>(initial.year);
+  const [mode, setMode] = useState<Mode>(initial.mode);
+  const [period, setPeriod] = useState<Period>(initial.period);
+  const [amount, setAmount] = useState<number | string>(initial.amount);
+  const [dependents, setDependents] = useState(initial.dependents);
+  const [taxBookSubmitted, setTaxBookSubmitted] = useState(initial.book);
+  const [pensionType, setPensionType] = useState(initial.pension);
+  const [disabilityGroup, setDisabilityGroup] = useState(initial.disability);
+  const [isRepressed, setIsRepressed] = useState(initial.repressed);
+  const [showRepressedTooltip, setShowRepressedTooltip] = useState(false);
 
-  const [amount, setAmount] = useState<number | string>(initial.amount!);
-  const [dependents, setDependents] = useState(initial.dependents!);
-  const [taxBookSubmitted, setTaxBookSubmitted] = useState(initial.book!);
-
-  // --- Parameters ---
-  const [pensionType, setPensionType] = useState<'none' | 'service' | 'old_age'>(initial.pension!);
-  const [disabilityGroup, setDisabilityGroup] = useState<'none' | '1' | '2' | '3'>(initial.disability!);
-  const [isRepressed, setIsRepressed] = useState(initial.repressed!);
-
-  // Update URL when state changes
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (lang !== 'lv') params.set('lang', lang);
-    if (year !== 2026) params.set('year', year.toString());
-    if (mode !== 'gross') params.set('mode', mode);
-    if (period !== 'monthly') params.set('period', period);
-    if (amount !== 1500) params.set('salary', amount.toString());
-    if (dependents !== 0) params.set('deps', dependents.toString());
-    if (taxBookSubmitted !== true) params.set('book', 'false');
-    if (pensionType !== 'none') params.set('pension', pensionType);
-    if (disabilityGroup !== 'none') params.set('disability', disabilityGroup);
-    if (isRepressed) params.set('repressed', 'true');
-
-    const newUrl = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    const numericAmount = typeof amount === 'string' && amount === '' ? 0 : Number(amount);
+    const search = buildUrlSearch({
+      lang,
+      year,
+      mode,
+      period,
+      amount: numericAmount,
+      dependents,
+      book: taxBookSubmitted,
+      pension: pensionType,
+      disability: disabilityGroup,
+      repressed: isRepressed,
+    });
+    const newUrl = search ? `?${search}` : window.location.pathname;
     window.history.replaceState(null, '', newUrl);
   }, [lang, year, mode, period, amount, dependents, taxBookSubmitted, pensionType, disabilityGroup, isRepressed]);
 
-  // Tooltip State
-  const [showRepressedTooltip, setShowRepressedTooltip] = useState(false);
-
-  const rules = useMemo(() => TAX_CONFIG[year] || TAX_CONFIG[2026], [year]);
+  const rules = useMemo(() => TAX_CONFIG[year] || TAX_CONFIG[DEFAULTS.year], [year]);
   const t = TRANSLATIONS[lang];
 
-  // --- Dynamic Input Label Logic ---
+  const taxInput = useMemo(
+    () => ({ rules, pensionType, disabilityGroup, isRepressed }),
+    [rules, pensionType, disabilityGroup, isRepressed],
+  );
+
   const getInputLabel = () => {
     if (mode === 'gross') {
       return period === 'monthly' ? t.gross_salary_monthly : t.gross_salary_yearly;
-    } else {
-      return period === 'monthly' ? t.net_salary_monthly : t.net_salary_yearly;
     }
+    return period === 'monthly' ? t.net_salary_monthly : t.net_salary_yearly;
   };
 
-  // --- Calculation Logic ---
-  const calculateTaxFromGross = useCallback((grossVal: number, depCount: number, hasBook: boolean): TaxCalculationResult => {
-    try {
-      const safeGross = Math.max(0, grossVal || 0);
+  const calcFromGross = useCallback(
+    (grossVal: number, depCount: number, hasBook: boolean) =>
+      calculateTaxFromGross(grossVal, depCount, hasBook, taxInput),
+    [taxInput],
+  );
 
-      // 1. VSAOI Rates
-      let rateEmp = rules.vsaoiEmployee;
-      let rateEmployer = rules.vsaoiEmployer;
-
-      if (pensionType === 'old_age') {
-        rateEmp = rules.vsaoiPensionerEmployee;
-        rateEmployer = rules.vsaoiPensionerEmployer;
-      } else if (pensionType === 'service') {
-        rateEmp = rules.vsaoiServiceEmployee;
-        rateEmployer = rules.vsaoiServiceEmployer;
-      }
-
-      const vsaoiEmp = round(safeGross * rateEmp);
-
-      // 2. Reliefs Breakdown
-      let appliedNonTaxable = 0;
-      let reliefDependents = 0;
-      let reliefDisability = 0;
-      let reliefRepressed = 0;
-
-      if (hasBook) {
-        // Special Non-taxable minimum rule for Pensioners AND Disabled
-        if (pensionType !== 'none' || disabilityGroup !== 'none') {
-          appliedNonTaxable = rules.specialNonTaxable; // 500 EUR
-        } else {
-          appliedNonTaxable = rules.nonTaxableMin; // Standard 510/550
-        }
-
-        reliefDependents = round(depCount * rules.dependentRelief);
-
-        if (disabilityGroup === '1' || disabilityGroup === '2') reliefDisability = rules.disabilityRelief12;
-        if (disabilityGroup === '3') reliefDisability = rules.disabilityRelief3;
-
-        if (isRepressed) reliefRepressed = rules.repressedRelief;
-      }
-
-      const totalReliefs = reliefDependents + reliefDisability + reliefRepressed;
-
-      // 3. Tax Base
-      const taxBase = Math.max(0, round(safeGross - vsaoiEmp - appliedNonTaxable - totalReliefs));
-
-      // 4. IIN
-      let iin = 0;
-
-      if (taxBase > rules.iinThreshold) {
-        const highPart = round(taxBase - rules.iinThreshold);
-        const lowPart = rules.iinThreshold;
-        const iinLow = round(lowPart * rules.iinRateLow);
-        const iinHigh = round(highPart * rules.iinRateHigh);
-        iin = iinLow + iinHigh;
-      } else {
-        iin = round(taxBase * rules.iinRateLow);
-      }
-
-      const net = round(safeGross - vsaoiEmp - iin);
-      const vsaoiEmployer = round(safeGross * rateEmployer);
-      const riskDuty = safeGross > 0 ? rules.riskDuty : 0;
-      const totalEmployerCost = round(safeGross + vsaoiEmployer + riskDuty);
-
-      return {
-        gross: safeGross,
-        net: net,
-        vsaoiEmployee: vsaoiEmp,
-        iin: iin,
-        employerVsaoi: vsaoiEmployer,
-        riskDuty: riskDuty,
-        totalEmployerCost: totalEmployerCost,
-        nonTaxableMinApplied: appliedNonTaxable,
-        reliefDependents,
-        reliefDisability,
-        reliefRepressed,
-        totalReliefsApplied: totalReliefs,
-        taxBase: taxBase,
-        rateEmp: rateEmp,
-        rateEmployer: rateEmployer
-      };
-    } catch {
-      return {
-        gross: 0, net: 0, vsaoiEmployee: 0, iin: 0, employerVsaoi: 0, riskDuty: 0, totalEmployerCost: 0,
-        nonTaxableMinApplied: 0, reliefDependents: 0, reliefDisability: 0, reliefRepressed: 0,
-        totalReliefsApplied: 0, taxBase: 0, rateEmp: 0, rateEmployer: 0
-      };
-    }
-  }, [rules, pensionType, disabilityGroup, isRepressed]);
-
-  const calculateGrossFromNet = useCallback((targetNet: number, depCount: number, hasBook: boolean): TaxCalculationResult => {
-    try {
-      let low = targetNet;
-      let high = targetNet * 2.5;
-      let calculatedGross = 0;
-      let iterations = 0;
-
-      while (iterations < 25) {
-        const mid = (low + high) / 2;
-        const res = calculateTaxFromGross(mid, depCount, hasBook);
-        if (Math.abs(res.net - targetNet) < 0.05) {
-          calculatedGross = mid;
-          break;
-        }
-        if (res.net < targetNet) low = mid;
-        else high = mid;
-        iterations++;
-        calculatedGross = mid;
-      }
-      return calculateTaxFromGross(calculatedGross, depCount, hasBook);
-    } catch {
-      return calculateTaxFromGross(0, depCount, hasBook);
-    }
-  }, [calculateTaxFromGross]);
+  const calcFromNet = useCallback(
+    (targetNet: number, depCount: number, hasBook: boolean) =>
+      calculateGrossFromNet(targetNet, depCount, hasBook, taxInput),
+    [taxInput],
+  );
 
   const results: TaxCalculationResult = useMemo(() => {
     let inputVal = typeof amount === 'string' && amount === '' ? 0 : Number(amount);
     if (period === 'yearly') inputVal = inputVal / 12;
 
     return mode === 'gross'
-      ? calculateTaxFromGross(inputVal, dependents, taxBookSubmitted)
-      : calculateGrossFromNet(inputVal, dependents, taxBookSubmitted);
-  }, [amount, dependents, taxBookSubmitted, mode, period, calculateTaxFromGross, calculateGrossFromNet]);
+      ? calcFromGross(inputVal, dependents, taxBookSubmitted)
+      : calcFromNet(inputVal, dependents, taxBookSubmitted);
+  }, [amount, dependents, taxBookSubmitted, mode, period, calcFromGross, calcFromNet]);
 
   const displayVal = (val: number | undefined) => {
     if (val === undefined) return 0;
@@ -630,7 +107,6 @@ const SalaryCalculator = () => {
   };
 
   let iinLabel = `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}%)`;
-
   if (results.taxBase > rules.iinThreshold) {
     iinLabel = `${t.income_tax} (${(rules.iinRateLow * 100).toFixed(1)}% / ${(rules.iinRateHigh * 100).toFixed(0)}%)`;
   }
@@ -638,13 +114,11 @@ const SalaryCalculator = () => {
   const vsaoiLabel = `${t.social_tax} (${((results.rateEmp || rules.vsaoiEmployee) * 100).toFixed(2)}%)`;
   const employerVsaoiLabel = `${t.social_tax} (${((results.rateEmployer || rules.vsaoiEmployer) * 100).toFixed(2)}%)`;
 
-  // --- Summary ---
   const generateSummary = () => {
     const sentences = [];
     const modeText = mode === 'gross' ? t.gross.toLowerCase() : t.net.toLowerCase();
     const periodText = period === 'monthly' ? t.summary.period_month : t.summary.period_year;
 
-    // New Logic: "Aprēķins veikts mēneša bruto algai (2026)"
     sentences.push(`${t.summary.calc_prefix} ${periodText} ${modeText} ${t.summary.salary} (${year}).`);
 
     if (taxBookSubmitted) sentences.push(t.summary.book_yes);
@@ -655,8 +129,8 @@ const SalaryCalculator = () => {
     if (pensionType === 'service') statusParts.push(t.summary.pension_service);
     if (disabilityGroup !== 'none') statusParts.push(`${disabilityGroup}. ${t.summary.disability}`);
     if (isRepressed) statusParts.push(t.summary.repressed);
-    if (statusParts.length > 0) sentences.push(`${t.summary.status_prefix} ${statusParts.join(", ")}.`);
-    return sentences.join(" ");
+    if (statusParts.length > 0) sentences.push(`${t.summary.status_prefix} ${statusParts.join(', ')}.`);
+    return sentences.join(' ');
   };
 
   const getMinWageError = () => {
@@ -682,20 +156,22 @@ const SalaryCalculator = () => {
 
       {/* HEADER */}
       <div className="w-full max-w-6xl flex justify-end mb-4 px-4 relative">
-        <div className="bg-slate-100 p-1 rounded-xl flex relative isolate gap-1">
+        <div role="group" aria-label={t.a11y.language} className="bg-slate-100 p-1 rounded-xl flex relative isolate gap-1">
           {(['lv', 'ru', 'en'] as const).map((l) => {
             const LangIcon = TRANSLATIONS[l].flag;
             return (
               <button
                 key={l}
+                type="button"
                 onClick={() => setLang(l)}
+                aria-pressed={lang === l}
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors uppercase relative z-10 ${lang === l ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
                   }`}
               >
                 <LangIcon className="w-4 h-3 rounded-[2px] shadow-sm object-cover" />
                 {TRANSLATIONS[l].label}
                 {lang === l && (
-                  <motion.div
+                  <m.div
                     layoutId="active-lang-pill"
                     className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -722,20 +198,22 @@ const SalaryCalculator = () => {
           <div className="flex flex-col gap-6 h-full">
 
             {/* Switcher (Mobile Fixed) */}
-            <div className="bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl flex items-stretch relative isolate">
+            <div role="group" aria-label={t.a11y.calculation_mode} className="bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl flex items-stretch relative isolate">
               {[
                 { id: 'gross', label: t.gross_to_net },
                 { id: 'net', label: t.net_to_gross }
               ].map((option) => (
                 <button
                   key={option.id}
-                  onClick={() => setMode(option.id)}
+                  type="button"
+                  onClick={() => setMode(option.id as Mode)}
+                  aria-pressed={mode === option.id}
                   className={`flex-1 py-2 px-2 text-[10px] sm:text-xs md:text-sm font-bold rounded-xl relative z-10 flex items-center justify-center text-center whitespace-normal leading-tight transition-colors ${mode === option.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
                     }`}
                 >
                   <span className="relative z-10">{option.label}</span>
                   {mode === option.id && (
-                    <motion.div
+                    <m.div
                       layoutId="active-pill"
                       className="absolute inset-0 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] rounded-xl -z-10"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -748,22 +226,24 @@ const SalaryCalculator = () => {
             {/* Input (Updated Logic) */}
             <div className="relative group">
               <div className="flex justify-between items-center mb-3">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">{getInputLabel()}</label>
+                <label htmlFor="salary-amount" className="text-xs font-bold text-slate-400 uppercase tracking-wider">{getInputLabel()}</label>
 
-                <div className="bg-slate-100 p-1 rounded-xl flex relative isolate">
+                <div role="group" aria-label={t.a11y.period} className="bg-slate-100 p-1 rounded-xl flex relative isolate">
                   {[
                     { id: 'monthly', label: t.monthly },
                     { id: 'yearly', label: t.yearly }
                   ].map((opt) => (
                     <button
                       key={opt.id}
-                      onClick={() => setPeriod(opt.id as 'monthly' | 'yearly')}
+                      type="button"
+                      onClick={() => setPeriod(opt.id as Period)}
+                      aria-pressed={period === opt.id}
                       className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 ${period === opt.id ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'
                         }`}
                     >
                       {opt.label}
                       {period === opt.id && (
-                        <motion.div
+                        <m.div
                           layoutId="period-pill"
                           className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10"
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -775,11 +255,13 @@ const SalaryCalculator = () => {
               </div>
 
               <div className="flex items-center relative">
-                <span className="absolute left-6 text-3xl text-slate-400 group-focus-within:text-indigo-500 transition-colors">€</span>
+                <span aria-hidden="true" className="absolute left-6 text-3xl text-slate-400 group-focus-within:text-indigo-500 transition-colors">€</span>
                 <input
+                  id="salary-amount"
                   type="number"
                   inputMode="numeric"
                   pattern="[0-9]*"
+                  aria-label={t.a11y.salary_amount}
                   value={amount}
                   onChange={(e) => { const val = e.target.value; setAmount(val === '' ? '' : Number(val)); }}
                   onBlur={() => { if (amount === '') setAmount(0); }}
@@ -794,29 +276,37 @@ const SalaryCalculator = () => {
             {/* Grid */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 flex flex-col justify-between">
-                <label className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
-                  <Users size={18} className="text-indigo-500" />
+                <span id="dependents-label" className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                  <Users size={18} aria-hidden="true" className="text-indigo-500" />
                   {t.dependents}
-                </label>
-                <div className="flex items-center justify-between bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200">
-                  <button onClick={() => setDependents(Math.max(0, dependents - 1))} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 active:scale-95 transition-transform"><Minus size={20} /></button>
-                  <span className="text-2xl font-bold text-slate-800 w-8 text-center">{dependents}</span>
-                  <button onClick={() => setDependents(dependents + 1)} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-indigo-600 active:scale-95 transition-transform"><Plus size={20} /></button>
+                </span>
+                <div role="group" aria-labelledby="dependents-label" className="flex items-center justify-between bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200">
+                  <button type="button" aria-label={t.a11y.dependents_decrement} onClick={() => setDependents(Math.max(0, dependents - 1))} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 active:scale-95 transition-transform"><Minus size={20} aria-hidden="true" /></button>
+                  <span aria-live="polite" className="text-2xl font-bold text-slate-800 w-8 text-center">{dependents}</span>
+                  <button type="button" aria-label={t.a11y.dependents_increment} onClick={() => setDependents(dependents + 1)} className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-slate-100 text-indigo-600 active:scale-95 transition-transform"><Plus size={20} aria-hidden="true" /></button>
                 </div>
               </div>
 
-              <motion.div onClick={() => setTaxBookSubmitted(!taxBookSubmitted)} whileTap={{ scale: 0.98 }} className={`group cursor-pointer rounded-3xl border p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${taxBookSubmitted ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-slate-200'}`}>
-                <div className="flex justify-between items-start z-10 h-full">
+              <m.button
+                type="button"
+                role="switch"
+                aria-checked={taxBookSubmitted}
+                aria-label={t.a11y.tax_book_toggle}
+                onClick={() => setTaxBookSubmitted(!taxBookSubmitted)}
+                whileTap={{ scale: 0.98 }}
+                className={`group cursor-pointer text-left rounded-3xl border p-5 flex flex-col justify-between relative overflow-hidden transition-all duration-200 ${taxBookSubmitted ? 'bg-indigo-50 border-indigo-500 ring-1 ring-indigo-500' : 'bg-white border-slate-200'}`}
+              >
+                <div className="flex justify-between items-start z-10 h-full w-full">
                   <div className="flex flex-col justify-between h-full">
                     <span className={`text-sm font-bold flex items-center gap-2 ${taxBookSubmitted ? 'text-indigo-900' : 'text-slate-700'}`}>
-                      <BookCheck size={18} className={taxBookSubmitted ? 'text-indigo-600' : 'text-slate-400'} />
+                      <BookCheck size={18} aria-hidden="true" className={taxBookSubmitted ? 'text-indigo-600' : 'text-slate-400'} />
                       {t.tax_book}
                     </span>
                     <span className={`text-xs mt-1 ${taxBookSubmitted ? 'text-indigo-600' : 'text-slate-500'}`}>{taxBookSubmitted ? t.submitted : t.not_submitted}</span>
                   </div>
-                  <div className={`w-12 h-7 rounded-full p-1 transition-colors ${taxBookSubmitted ? 'bg-indigo-600' : 'bg-slate-200'}`}><motion.div layout className={`w-5 h-5 bg-white rounded-full shadow-sm ${taxBookSubmitted ? 'ml-auto' : ''}`} /></div>
+                  <div aria-hidden="true" className={`w-12 h-7 rounded-full p-1 transition-colors ${taxBookSubmitted ? 'bg-indigo-600' : 'bg-slate-200'}`}><m.div layout className={`w-5 h-5 bg-white rounded-full shadow-sm ${taxBookSubmitted ? 'ml-auto' : ''}`} /></div>
                 </div>
-              </motion.div>
+              </m.button>
             </div>
 
             {/* Secondary (Grouped in Card) */}
@@ -825,19 +315,19 @@ const SalaryCalculator = () => {
 
                 {/* Pension (Fixed Layout: Centered & Wrapped) */}
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Armchair size={16} />
+                  <span id="pension-label" className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Armchair size={16} aria-hidden="true" />
                     {t.pension}
-                  </label>
-                  <div className="bg-slate-100 p-1 rounded-2xl flex relative isolate items-stretch">
+                  </span>
+                  <div role="group" aria-labelledby="pension-label" className="bg-slate-100 p-1 rounded-2xl flex relative isolate items-stretch">
                     {[
                       { id: 'none', label: t.none },
                       { id: 'service', label: t.service },
                       { id: 'old_age', label: t.old_age }
                     ].map((opt) => (
-                      <button key={opt.id} onClick={() => setPensionType(opt.id as 'none' | 'service' | 'old_age')} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
+                      <button key={opt.id} type="button" aria-pressed={pensionType === opt.id} onClick={() => setPensionType(opt.id as 'none' | 'service' | 'old_age')} className={`flex-1 py-2 px-2 text-[10px] font-bold rounded-xl transition-all relative z-10 flex items-center justify-center text-center gap-1.5 whitespace-normal leading-tight h-auto min-h-[40px] ${pensionType === opt.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
                         <span>{opt.label}</span>
-                        {pensionType === opt.id && <motion.div layoutId="pension-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
+                        {pensionType === opt.id && <m.div layoutId="pension-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                       </button>
                     ))}
                   </div>
@@ -846,51 +336,67 @@ const SalaryCalculator = () => {
                 {/* Row for Disability & Status */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex flex-col h-full">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <Accessibility size={16} />
+                    <span id="disability-label" className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Accessibility size={16} aria-hidden="true" />
                       {t.disability}
-                    </label>
-                    <div className="bg-slate-100 p-1 rounded-2xl flex-1 flex items-stretch relative isolate h-full">
+                    </span>
+                    <div role="group" aria-labelledby="disability-label" className="bg-slate-100 p-1 rounded-2xl flex-1 flex items-stretch relative isolate h-full">
                       {[
                         { id: 'none', label: t.none },
                         { id: '1', label: t.group_1 },
                         { id: '2', label: t.group_2 },
                         { id: '3', label: t.group_3 }
                       ].map((grp) => (
-                        <button key={grp.id} onClick={() => setDisabilityGroup(grp.id as 'none' | '1' | '2' | '3')} className={`flex-1 flex items-center justify-center py-2 text-[10px] font-bold rounded-xl transition-all relative z-10 ${disabilityGroup === grp.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
+                        <button key={grp.id} type="button" aria-pressed={disabilityGroup === grp.id} onClick={() => setDisabilityGroup(grp.id as 'none' | '1' | '2' | '3')} className={`flex-1 flex items-center justify-center py-2 text-[10px] font-bold rounded-xl transition-all relative z-10 ${disabilityGroup === grp.id ? 'text-indigo-900' : 'text-slate-400 hover:text-slate-600'}`}>
                           {grp.label}
-                          {disabilityGroup === grp.id && <motion.div layoutId="disability-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
+                          {disabilityGroup === grp.id && <m.div layoutId="disability-pill" className="absolute inset-0 bg-white shadow-sm rounded-xl -z-10" transition={{ type: "spring", stiffness: 400, damping: 30 }} />}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="flex flex-col h-full">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                      <Landmark size={16} />
+                    <span id="status-label" className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Landmark size={16} aria-hidden="true" />
                       {t.status}
-                    </label>
-                    <motion.div
+                    </span>
+                    <m.div
+                      role="switch"
+                      tabIndex={0}
+                      aria-checked={isRepressed}
+                      aria-labelledby="status-label repressed-status-text"
                       onClick={() => setIsRepressed(!isRepressed)}
+                      onKeyDown={(e) => {
+                        if (e.key === ' ' || e.key === 'Enter') {
+                          e.preventDefault();
+                          setIsRepressed(!isRepressed);
+                        }
+                      }}
                       whileTap={{ scale: 0.98 }}
                       className={`group cursor-pointer rounded-2xl border p-3 flex-1 flex items-center justify-between transition-all duration-200 min-h-[44px] h-full ${isRepressed ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200 hover:border-slate-300'} relative`}
                     >
                       <div className="flex items-center gap-1.5 flex-1 pr-2">
-                        <span className={`text-[10px] font-bold leading-tight whitespace-normal ${isRepressed ? 'text-indigo-900' : 'text-slate-500'}`}>
+                        <span id="repressed-status-text" className={`text-[10px] font-bold leading-tight whitespace-normal ${isRepressed ? 'text-indigo-900' : 'text-slate-500'}`}>
                           {t.status_label}
                         </span>
                         <button
                           type="button"
+                          aria-label={t.a11y.repressed_info}
+                          aria-expanded={showRepressedTooltip}
+                          aria-controls="repressed-tooltip"
                           onClick={(e) => { e.stopPropagation(); setShowRepressedTooltip(!showRepressedTooltip); }}
+                          onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') e.stopPropagation(); }}
                           onMouseEnter={() => setShowRepressedTooltip(true)}
                           onMouseLeave={() => setShowRepressedTooltip(false)}
                           className="text-slate-400 hover:text-indigo-500 transition-colors p-0.5 rounded-full hover:bg-slate-100 flex-shrink-0"
                         >
-                          <Info size={14} />
+                          <Info size={14} aria-hidden="true" />
                         </button>
                         <AnimatePresence>
                           {showRepressedTooltip && (
-                            <motion.div
+                            <m.div
+                              id="repressed-tooltip"
+                              role="tooltip"
                               initial={{ opacity: 0, y: 10, scale: 0.95 }}
                               animate={{ opacity: 1, y: 0, scale: 1 }}
                               exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -914,12 +420,12 @@ const SalaryCalculator = () => {
                                 </div>
                               </div>
                               <div className="absolute -bottom-1.5 left-6 w-3 h-3 bg-white border-b border-r border-slate-100 transform rotate-45"></div>
-                            </motion.div>
+                            </m.div>
                           )}
                         </AnimatePresence>
                       </div>
-                      <div className={`w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ${isRepressed ? 'bg-indigo-600' : 'bg-slate-200'}`}><motion.div layout className={`w-4 h-4 bg-white rounded-full shadow-sm ${isRepressed ? 'ml-auto' : ''}`} /></div>
-                    </motion.div>
+                      <div aria-hidden="true" className={`w-8 h-5 rounded-full p-0.5 transition-colors shrink-0 ${isRepressed ? 'bg-indigo-600' : 'bg-slate-200'}`}><m.div layout className={`w-4 h-4 bg-white rounded-full shadow-sm ${isRepressed ? 'ml-auto' : ''}`} /></div>
+                    </m.div>
                   </div>
                 </div>
               </div>
@@ -928,55 +434,37 @@ const SalaryCalculator = () => {
             {/* Footer */}
             <div className="pt-4 border-t border-slate-100 mt-auto">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} /> {t.summary.calc_prefix}</span>
-                <div className="bg-slate-100 p-1 rounded-xl flex">
-                  {[2025, 2026].map((y) => (
-                    <button key={y} onClick={() => setYear(y)} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 flex items-center gap-1.5 ${year === y ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'}`}>
-                      {y} {year === y && <motion.div layoutId="active-year-pill-bottom" className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10" transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
+                <span id="year-label" className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2"><Calendar size={14} aria-hidden="true" /> {t.summary.calc_prefix}</span>
+                <div role="group" aria-labelledby="year-label" className="bg-slate-100 p-1 rounded-xl flex">
+                  {SUPPORTED_YEARS.map((y) => (
+                    <button key={y} type="button" aria-pressed={year === y} onClick={() => setYear(y)} className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-colors relative z-10 flex items-center gap-1.5 ${year === y ? 'text-indigo-900' : 'text-slate-500 hover:text-slate-700'}`}>
+                      {y} {year === y && <m.div layoutId="active-year-pill-bottom" className="absolute inset-0 bg-white shadow-sm rounded-lg -z-10" transition={{ type: "spring", stiffness: 300, damping: 30 }} />}
                     </button>
                   ))}
                 </div>
               </div>
               <div className="flex gap-4 items-start p-5 rounded-3xl bg-slate-50/80 border border-slate-100 text-xs text-slate-600">
-                <Info className="w-5 h-5 shrink-0 mt-0.5 text-indigo-400" />
+                <Info aria-hidden="true" className="w-5 h-5 shrink-0 mt-0.5 text-indigo-400" />
                 <div>
                   <p className="font-bold text-slate-800 mb-1">{year}. {lang === 'lv' ? 'gada' : ''} {t.tax_env}:</p>
                   <ul className="space-y-1.5 pl-1">
-                    {year === 2026 ? (
-                      <>
-                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                    {[
+                      { label: t.min_wage_info, current: rules.minWage, prior: rules.priorMinWage },
+                      { label: t.non_taxable, current: rules.nonTaxableMin, prior: rules.priorNonTaxableMin },
+                    ].map(({ label, current, prior }) => {
+                      const delta = current - prior;
+                      const Icon = delta === 0 ? CheckCircle2 : ArrowUpRight;
+                      const annotation = delta === 0 ? t.fixed : `+${delta}€`;
+                      return (
+                        <li key={label} className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
                           <span className="flex items-center gap-2">
-                            <ArrowUpRight size={14} className="text-emerald-500" />
-                            {t.min_wage_info}:
+                            <Icon size={14} aria-hidden="true" className="text-emerald-500" />
+                            {label}:
                           </span>
-                          <strong className="pl-6 sm:pl-0">€780 <span className="font-normal text-slate-500">(+40€)</span></strong>
+                          <strong className="pl-6 sm:pl-0">€{current} <span className="font-normal text-slate-500">({annotation})</span></strong>
                         </li>
-                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                          <span className="flex items-center gap-2">
-                            <ArrowUpRight size={14} className="text-emerald-500" />
-                            {t.non_taxable}:
-                          </span>
-                          <strong className="pl-6 sm:pl-0">€550 <span className="font-normal text-slate-500">(+40€)</span></strong>
-                        </li>
-                      </>
-                    ) : (
-                      <>
-                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                          <span className="flex items-center gap-2">
-                            <ArrowUpRight size={14} className="text-emerald-500" />
-                            {t.min_wage_info}:
-                          </span>
-                          <strong className="pl-6 sm:pl-0">€740 <span className="font-normal text-slate-500">(+40€)</span></strong>
-                        </li>
-                        <li className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-                          <span className="flex items-center gap-2">
-                            <CheckCircle2 size={14} className="text-emerald-500" />
-                            {t.non_taxable}:
-                          </span>
-                          <strong className="pl-6 sm:pl-0">€510 <span className="font-normal text-slate-500">({t.fixed})</span></strong>
-                        </li>
-                      </>
-                    )}
+                      );
+                    })}
                   </ul>
                 </div>
               </div>
@@ -1027,7 +515,7 @@ const SalaryCalculator = () => {
                 <div className="bg-slate-50/80 p-4 border-t border-b border-slate-100">
                   <div className="border border-dashed border-slate-300 rounded-xl p-4 bg-white/50">
                     <div className="flex items-center gap-2 mb-3 text-slate-400">
-                      <TrendingDown size={14} />
+                      <TrendingDown size={14} aria-hidden="true" />
                       <span className="text-[10px] font-bold uppercase tracking-wider">{t.reliefs_title}</span>
                     </div>
                     <TableRows>
@@ -1057,7 +545,7 @@ const SalaryCalculator = () => {
             {/* Warning Card for High Income (Moved Here) */}
             {(results.gross * (period === 'monthly' ? 12 : 1)) > 200000 && (
               <div className="bg-amber-50 border border-amber-200 rounded-[2rem] p-6 flex gap-4 text-amber-900 mt-auto">
-                <Info className="shrink-0 text-amber-600 mt-0.5" size={20} />
+                <Info aria-hidden="true" className="shrink-0 text-amber-600 mt-0.5" size={20} />
                 <div>
                   <h3 className="font-bold text-sm mb-1.5">{t.summary.warning_title}</h3>
                   <p className="text-xs leading-relaxed opacity-90">{t.summary.warning_text}</p>
@@ -1068,29 +556,8 @@ const SalaryCalculator = () => {
         </div>
       </div>
       <Analytics />
+      <SpeedInsights />
     </div >
-  );
-};
-
-const TableRows = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col gap-3">
-    {children}
-  </div>
-);
-
-const TableRow = ({ label, value, isNeutral = false, isBold = false, size = 'md' }: TableRowProps) => {
-  const textSize = size === 'sm' ? 'text-xs' : 'text-sm';
-  const textColor = isNeutral ? 'text-slate-500' : 'text-slate-700';
-  const valueColor = isNeutral ? 'text-slate-500' : isBold ? 'text-slate-900' : 'text-slate-700';
-  const weight = isBold ? 'font-bold' : 'font-medium';
-
-  return (
-    <div className={`flex justify-between items-start gap-3 ${textSize}`}>
-      <span className={`${textColor} leading-tight`}>{label}</span>
-      <span className={`tabular-nums ${valueColor} ${weight} whitespace-nowrap shrink-0`}>
-        <AnimatedCounter value={value} />
-      </span>
-    </div>
   );
 };
 
